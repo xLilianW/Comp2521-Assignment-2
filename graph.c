@@ -19,6 +19,7 @@ typedef struct listNode {
 // graph representation 
 typedef struct GraphRep {
 	int    nV;          // #URLs
+	char  *URLs;         // stores which url is at each index
 	Outgoing  *connections; // list representation of outgoing links
 } GraphRep;
 
