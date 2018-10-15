@@ -11,15 +11,17 @@
 #define FALSE   0
 
 // outgoing hyperlink
-typedef struct listNode {
+struct listNode {
     char *URL;
     Outgoing next;
-} *Outgoing;
+} 
+
+typedef listNode *Outgoing;
 
 // graph representation 
 typedef struct GraphRep {
 	int    nV;          // #URLs
-	char  *URLs;         // stores which url is at each index
+	char **URLs;         // stores which url is at each index
 	Outgoing  *connections; // list representation of outgoing links
 } GraphRep;
 
@@ -56,22 +58,26 @@ void removeEdge(Graph g, Vertex v, Vertex w)
 }
 
 // create an empty graph
-Graph newGraph(int nV)
+Graph newGraph(int nV, char ** urls)
 {
-	assert(nV > 0);
-	int v, w;
 	Graph new = malloc(sizeof(GraphRep));
 	assert(new != 0);
-	new->nV = nV; new->nE = 0;
-	new->edges = malloc(nV*sizeof(int *));
-	assert(new->edges != 0);
-	for (v = 0; v < nV; v++) {
-		new->edges[v] = malloc(nV*sizeof(int));
-		assert(new->edges[v] != 0);
-		for (w = 0; w < nV; w++)
-			new->edges[v][w] = 0;
+	new->nV = nV; 
+	for (i=0; i < nV; i++) {
+	    new->URLs[i] = strdup(urls[i]);
 	}
+	new->connections = malloc(nV*sizeof(listNode));
+	assert(new->edges != 0);
+
 	return new;
+}
+
+listNode newNode(char *URL) {
+    listNode new = malloc(sizeof(listNode));
+    assert(new != NULL);
+    new->URL = strdup(URL);
+    new->next = NULL;
+    return new;
 }
 
 // free memory associated with graph
