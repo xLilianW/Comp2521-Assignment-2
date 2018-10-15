@@ -16,13 +16,25 @@ char *collectData(void){
     for(int i = 0; i < g->nV; i++){
         char *fileName = strcat(urls[i], ".txt");   // Open url file
         FILE *urlFile = fopen(fileName, "r");
-        fscanf(urlFile, "%*[^\n]\n", NULL);
+        
+        fscanf(urlFile, "%*[^\n]\n", NULL); // skip #start section 1
+        
         char *outgoingURL
-        fscanf(collection, " %s", outgoingURL);
-        for (int j = 0; strcmp(outgoingURL, "#end") != 0; j++) {
-            fscanf(collection, " %s", outgoingURL);
-            urls[j]
+        Outgoing prev;
+        fscanf(urlFile, " %s", outgoingURL);
+        for (int j = 0; strcmp(outgoingURL, "#end") != 0; j++) { // scan in outgoing URLs
+            Outgoing hyperlink = newNode(outgoingURL);
+            if (j==0) {
+                g->connections[i] = hyperlink;
+                prev = hyperlink;
+            }
+            else {
+                prev->next = hyperlink;
+                prev = hyperlink;
+            }
+            fscanf(urlFile, " %s", outgoingURL);
         }
+        fclose(urlFile);
     }
          
         

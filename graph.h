@@ -7,6 +7,7 @@
 
 // graph representation is hidden
 typedef struct GraphRep *Graph;
+typedef listNode *Outgoing;
 
 // operations on graphs
 Graph newGraph(int nV);

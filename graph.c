@@ -16,7 +16,6 @@ struct listNode {
     Outgoing next;
 } 
 
-typedef listNode *Outgoing;
 
 // graph representation 
 typedef struct GraphRep {
