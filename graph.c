@@ -10,10 +10,16 @@
 #define TRUE    1
 #define FALSE   0
 
-// graph representation (adjacency matrix)
+// outgoing hyperlink
+typedef struct listNode {
+    char *URL;
+    Outgoing next;
+} *Outgoing;
+
+// graph representation 
 typedef struct GraphRep {
 	int    nV;          // #URLs
-	int  **connections; // adjacency matrix of outgoing links
+	Outgoing  *connections; // list representation of outgoing links
 } GraphRep;
 
 // make an edge
