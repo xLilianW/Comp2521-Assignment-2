@@ -12,9 +12,19 @@ char *collectData(void){
         i++;
     }
     
-    Graph g = newGraph(i, urls);
-    
-        //make empty graph
-        //open file (add .txt)
+    Graph g = newGraph(i, urls);    // Make empty graph
+    for(int i = 0; i < g->nV; i++){
+        char *fileName = strcat(urls[i], ".txt");   // Open url file
+        FILE *urlFile = fopen(fileName, "r");
+        fscanf(urlFile, "%*[^\n]\n", NULL);
+        char *outgoingURL
+        fscanf(collection, " %s", outgoingURL);
+        for (int j = 0; strcmp(outgoingURL, "#end") != 0; j++) {
+            fscanf(collection, " %s", outgoingURL);
+            urls[j]
+        }
+    }
+         
+        
         //update graph by adding node and outgoing links
 }
