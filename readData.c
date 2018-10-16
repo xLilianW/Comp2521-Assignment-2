@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib,h>
 #include "graph.h"
+#include "BSTree.h"
 
-Graph collectData (void) {
+Graph collectOutgoingURLs () {
     FILE *collection = fopen("collection.txt", "r");
     char **urls;
     int i = 0;
@@ -35,7 +36,22 @@ Graph collectData (void) {
             }
             fscanf(urlFile, " %s", outgoingURL);    // Scan in outgoing URLs
         }
+        
+        // add section 2 to invertedIndex
+        g->invertedIndex = updateInvertedIndex(g->invertedIndex, urlFile);
         fclose(urlFile);
     }
+    
+    
     return g; 
 }
+
+// update invertedIndex according to section 2 of a url file
+BSTree updateInvertedIndex(BSTree invertedIndex, FILE *urlFile) {
+ 
+    return invertedIndex;
+
+}
+
+
+

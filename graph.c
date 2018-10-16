@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include "Graph.h"
-#include "Queue.h"
+#include "graph.h"
+#include "BSTree.h"
 
 #define TRUE    1
 #define FALSE   0
@@ -23,6 +23,7 @@ typedef struct GraphRep {
 	int    nV;          // #URLs
 	char **URLs;         // stores which url is at each index
 	Outgoing  *connections; // list representation of outgoing links
+	BSTree invertedIndex;   // inverted index of word frequencies
 } GraphRep;
 
 // make an edge
@@ -68,7 +69,8 @@ Graph newGraph(int nV, char ** urls)
 	}
 	new->connections = malloc(nV*sizeof(listNode));
 	assert(new->edges != 0);
-
+    new->invertedIndex = NULL;
+    
 	return new;
 }
 
