@@ -13,6 +13,7 @@
 // outgoing hyperlink
 struct listNode {
     char *URL;
+    double pageWeight;
     Outgoing next;
 } 
 

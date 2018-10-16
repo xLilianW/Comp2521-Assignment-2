@@ -2,7 +2,7 @@
 #include <stdlib,h>
 #include "graph.h"
 
-char *collectData(void){
+Graph collectData (void) {
     FILE *collection = fopen("collection.txt", "r");
     char **urls;
     int i = 0;
@@ -22,7 +22,8 @@ char *collectData(void){
         char *outgoingURL
         Outgoing prev;
         fscanf(urlFile, " %s", outgoingURL);
-        for (int j = 0; strcmp(outgoingURL, "#end") != 0; j++) { // scan in outgoing URLs
+        // Update graph by adding node and outgoing links
+        for (int j = 0; strcmp(outgoingURL, "#end") != 0; j++) { 
             Outgoing hyperlink = newNode(outgoingURL);
             if (j==0) {
                 g->connections[i] = hyperlink;
@@ -32,11 +33,9 @@ char *collectData(void){
                 prev->next = hyperlink;
                 prev = hyperlink;
             }
-            fscanf(urlFile, " %s", outgoingURL);
+            fscanf(urlFile, " %s", outgoingURL);    // Scan in outgoing URLs
         }
         fclose(urlFile);
     }
-         
-        
-        //update graph by adding node and outgoing links
+    return g; 
 }
