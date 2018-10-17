@@ -1,4 +1,4 @@
-// BSTree.h ... interface to binary search tree ADT
+// BSTree.h ... char *erface to binary search tree ADT
 
 #ifndef BSTREE_H
 #define BSTREE_H
@@ -15,15 +15,17 @@ void showBSTree(BSTree);
 void showBSTreeNode(BSTree);
 
 // count #nodes in BSTree
-int BSTreeNumNodes(BSTree);
+char * BSTreeNumNodes(BSTree);
 // count #leaves in BSTree
-int BSTreeNumLeaves(BSTree);
+char * BSTreeNumLeaves(BSTree);
 
 // insert a new value into a BSTree
 BSTree BSTreeInsert(BSTree, char *);
-// check whether a value is in a BSTree
-int BSTreeFind(BSTree, int);
+// insert a page char *o the pageList of a word
+void BSTAddPage(char *, BSTNode);
+// find a word in the tree
+BSTNode BSTreeFind(BSTree, char *);
 // delete a value from a BSTree
-BSTree BSTreeDelete(BSTree, int);
+BSTree BSTreeDelete(BSTree, char *);
 
 #endif

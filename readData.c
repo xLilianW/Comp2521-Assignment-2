@@ -38,7 +38,7 @@ Graph collectOutgoingURLs () {
         }
         
         // add section 2 to inver
-        g->invertedIndex = updateInvertedIndex(g->invertedIndex, urlFile);
+        g->invertedIndex = updateInvertedIndex(g->invertedIndex, urlFile, urls[i]);
         fclose(urlFile);
     }
     
@@ -47,18 +47,19 @@ Graph collectOutgoingURLs () {
 }
 
 // update invertedIndex according to section 2 of a url file
-BSTree updateInvertedIndex(BSTree invertedIndex, FILE *urlFile) {
+BSTree updateInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url) {
     fscanf(text, "%*[^\n]\n%*[^\n]\n", NULL,NULL); // skip to text in section 2
     int i;
     char *word[BUF_SIZ];
     fscanf(urlFile, " %s", word);
     
-    for (i = 0; strcmp(outgoingURL, "#end") != 0; j++) { 
-    
+    for (i = 0; strcmp(word, "#end") != 0; i++) {
+        invertedIndex = BSTreeInsert(invertedIndex, word);
+        BSTNode node = BSTreeFind(invertedIndex, word);
+        BSTAddPage(url, node);
     }
     
     return invertedIndex;
-
 }
 
 
