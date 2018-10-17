@@ -42,8 +42,10 @@ BSTree collectInvertedIndex() {
     
     
     char word[BUFSIZ];
-    for (i = 0; i < nURLs; i++) {
-        char *fileName = strcat(urls[i], ".txt");   // Open each url file
+    for (i = 0; i < 1; i++) {
+        char *fileName = strdup(urls[i]);
+        fileName = realloc(fileName, strlen(urls[i]) + strlen(".txt") + 1);
+        strcat(fileName, ".txt");   // Open each url file
         FILE *urlFile = fopen(fileName, "r");
         
         fscanf(urlFile, "%*[^#]#%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL); // skip to section 2
@@ -58,26 +60,29 @@ BSTree collectInvertedIndex() {
             removePunctuation(word);
             
             // add word and url to BST
-            BSTreeInsert(invertedIndex, word);
+            invertedIndex = BSTreeInsert(invertedIndex, word);
             BSTLink node = BSTreeFind(invertedIndex, word);
-            BSTAddPage(urls[i], node);
+            //BSTAddPage(urls[i], node);
+            fscanf(urlFile, " %s", word);
         }
         fclose(urlFile);
     }
-    
+
     return invertedIndex;
 }
 
 // extract list of urls from collection.txt
 int collectURLs(char *urls[BUFSIZ]) {
-    FILE *collection = fopen("test.txt", "r"); //FIXME make it collection.txt
+    char url[BUFSIZ];
+    FILE *collection = fopen("collection.txt", "r"); //FIXME make it collection.txt
     int i = 0;
     
     // make a list of URLS
-    while (fscanf(collection, " %s", urls[i]) == 1) {
+    while (fscanf(collection, " %s", url) == 1) {
+        urls[i] = malloc(strlen(url) + 1);
+        strcpy(urls[i], url);
         i++;
     }
-    
     return i;
 }
 

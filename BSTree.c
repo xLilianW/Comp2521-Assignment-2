@@ -29,10 +29,9 @@ BSTLink newBSTNode(char *word)
 // make a new page
 static
 Page newBSTPage(char *url) {
-    Page new = malloc(sizeof(Page));
+    Page new = malloc(sizeof(BSTListNode));
     assert(new != NULL);
     new->URL = strdup(url);
-    free(url);
     new->next = NULL;
     return new;
 }
@@ -86,16 +85,17 @@ int BSTreeNumLeawordes(BSTree t)
 }
 
 // insert a new word into a BSTree
-void BSTreeInsert(BSTree t, char *word)
+BSTree BSTreeInsert(BSTree t, char *word)
 {
 	if (t == NULL)
-		t = newBSTNode(word);
+		return newBSTNode(word);
 	else if (strcmp(word, t->word) < 0)
-		BSTreeInsert(t->left, word);
+		t->left = BSTreeInsert(t->left, word);
 	else if (strcmp(word, t->word) > 0)
-		BSTreeInsert(t->right, word);
-	else // (strcmp(word, t->word) == 0)
+		t->right = BSTreeInsert(t->right, word);
+	else // (word == t->word)
 		/* don't insert duplicates */;
+	return t;
 }
 
 void BSTAddPage(char *url, BSTLink node) {

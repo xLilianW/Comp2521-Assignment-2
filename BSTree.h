@@ -22,7 +22,7 @@ int BSTreeNumNodes(BSTree);
 int BSTreeNumLeaves(BSTree);
 
 // insert a new value into a BSTree
-void BSTreeInsert(BSTree, char *);
+BSTree BSTreeInsert(BSTree, char *);
 // insert a page char *o the pageList of a word
 void BSTAddPage(char *, BSTLink );
 // find a word in the tree
