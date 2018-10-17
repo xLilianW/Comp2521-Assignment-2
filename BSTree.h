@@ -14,22 +14,13 @@ void showBSTree(BSTree);
 // display BSTree root node
 void showBSTreeNode(BSTree);
 
-// print values in infix order
-void BSTreeInfix(BSTree);
-// print values in prefix order
-void BSTreePrefix(BSTree);
-// print values in postfix order
-void BSTreePostfix(BSTree);
-// print values in level-order
-void BSTreeLevelOrder(BSTree);
-
 // count #nodes in BSTree
 int BSTreeNumNodes(BSTree);
 // count #leaves in BSTree
 int BSTreeNumLeaves(BSTree);
 
 // insert a new value into a BSTree
-BSTree BSTreeInsert(BSTree, int);
+BSTree BSTreeInsert(BSTree, char *);
 // check whether a value is in a BSTree
 int BSTreeFind(BSTree, int);
 // delete a value from a BSTree
