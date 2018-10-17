@@ -25,7 +25,7 @@ typedef struct GraphRep {
 	BSTree invertedIndex;   // inverted index of word frequencies
 } GraphRep;
 
-int findURLIndex (Graph g, Ougoing node) {
+int findURLIndex (Graph g, Outgoing node) {
     int i = 0;
     while (g->URLs[i] != NULL) {
         if (strcmp(URLs[i], node->URL) == 0){
