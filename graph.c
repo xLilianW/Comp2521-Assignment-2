@@ -11,11 +11,11 @@
 #define FALSE   0
 
 // outgoing hyperlink
-struct listNode {
+typedef struct listNode {
     char *URL;
     double pageWeight;
     Outgoing next;
-} 
+} listNode
 
 // graph representation 
 typedef struct GraphRep {
@@ -52,12 +52,26 @@ Graph newGraph(int nV, char ** urls)
 	return new;
 }
 
-struct listNode *newNode(char *url) {
+listNode *newNode(char *url) {
     listNode *new = malloc(sizeof(listNode));
     assert(new != NULL);
     new->URL = strdup(url);
     new->next = NULL;
     return new;
+}
+
+void addGraphConnection(Graph g, int src, Outgoing dest) {
+    if (g->connections[i] == NULL) {
+        g->connections[i] = dest;
+    }
+    else {
+        // append dest to end of list
+        Outgoing curr = g->connections[i];
+        while (curr->next != NULL) {
+            curr = curr->next;
+        }
+        curr->next = dest;
+    }
 }
 
 // free memory associated with graph
@@ -90,4 +104,11 @@ int numNodes(Graph g) {
         return 0;
     else 
         return g->nV;
+}
+
+BSTree getInvertedIndex(Graph g) {
+    if (g == NULL) 
+        return NULL;
+    else 
+        return g->invertedIndex;   
 }

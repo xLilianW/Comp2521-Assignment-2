@@ -4,9 +4,11 @@
 #include "graph.h"
 #include "BSTree.h"
 
+void updateInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url);
+
 Graph collectOutgoingURLs () {
     FILE *collection = fopen("collection.txt", "r");
-    char **urls;
+    char *urls[BUFSIZ];
     int i = 0;
     
     // make a list of URLS
@@ -22,34 +24,25 @@ Graph collectOutgoingURLs () {
         fscanf(urlFile, "%*[^\n]\n", NULL); // skip #start section 1
         
         char outgoingURL[BUFSIZ];
-        Outgoing prev;
         fscanf(urlFile, " %s", outgoingURL);
         // Update graph by adding node and outgoing links
         for (int j = 0; strcmp(outgoingURL, "#end") != 0; j++) { 
             Outgoing hyperlink = newNode(outgoingURL);
-            if (j==0) {
-                g->connections[i] = hyperlink;
-                prev = hyperlink;
-            }
-            else {
-                prev->next = hyperlink;
-                prev = hyperlink;
-            }
+            addGraphConnection(g, i, hyperlink);
             fscanf(urlFile, " %s", outgoingURL);    // Scan in outgoing URLs
         }
         
-        // add section 2 to inver
-        g->invertedIndex = updateInvertedIndex(g->invertedIndex, urlFile, urls[i]);
+        // add section 2 to inverted index
+        updateInvertedIndex(getInvertedIndex(g), urlFile, urls[i]);
         fclose(urlFile);
     }
-    
-    
+     
     return g; 
 }
 
 // update invertedIndex according to section 2 of a url file
-BSTree updateInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url) {
-    fscanf(text, "%*[^\n]\n%*[^\n]\n", NULL,NULL); // skip to text in section 2
+void updateInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url) {
+    fscanf(urlFile, "%*[^\n]\n%*[^\n]\n", NULL,NULL); // skip to text in section 2
     int i;
     char word[BUFSIZ];
     fscanf(urlFile, " %s", word);
@@ -59,8 +52,6 @@ BSTree updateInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url) {
         BSTNode node = BSTreeFind(invertedIndex, word);
         BSTAddPage(url, node);
     }
-    
-    return invertedIndex;
 }
 
 
