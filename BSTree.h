@@ -1,31 +1,32 @@
+
 // BSTree.h ... char *erface to binary search tree ADT
 
 #ifndef BSTREE_H
 #define BSTREE_H
 
+
 typedef struct BSTNode *BSTree;
-typedef struct BSTNode *BSTNode;
+typedef struct BSTNode *BSTLink;
+typedef struct BSTListNode *Page;
 
 // create an empty BSTree
 BSTree newBSTree();
 // free memory associated with BSTree
 void dropBSTree(BSTree);
-// display a BSTree
-void showBSTree(BSTree);
-// display BSTree root node
-void showBSTreeNode(BSTree);
+// print the BST in infix order
+void BSTreeInfix(BSTree t);
 
 // count #nodes in BSTree
-char * BSTreeNumNodes(BSTree);
+int BSTreeNumNodes(BSTree);
 // count #leaves in BSTree
-char * BSTreeNumLeaves(BSTree);
+int BSTreeNumLeaves(BSTree);
 
 // insert a new value into a BSTree
-BSTree BSTreeInsert(BSTree, char *);
+void BSTreeInsert(BSTree, char *);
 // insert a page char *o the pageList of a word
-void BSTAddPage(char *, BSTNode);
+void BSTAddPage(char *, BSTLink );
 // find a word in the tree
-BSTNode BSTreeFind(BSTree, char *);
+struct BSTNode *BSTreeFind(BSTree, char *);
 // delete a value from a BSTree
 BSTree BSTreeDelete(BSTree, char *);
 

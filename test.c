@@ -6,7 +6,7 @@ int main() {
     FILE *urlFile = fopen("test.txt", "r");    
 
     char url[50];
-    fscanf(urlFile, "%*s#start Section-2", NULL);
+    fscanf(urlFile, "%*[^#]#%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL);
     fscanf(urlFile, " %s", url);
     while (strcmp(url, "#end") != 0) {
         printf("%s\n",url);

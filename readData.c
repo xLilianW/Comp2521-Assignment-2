@@ -1,17 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "graph.h"
-#include "BSTree.h"
+#include <ctype.h>
+#include "readData.h"
 
-void updateInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url);
+int collectURLs(char *urls[BUFSIZ]);
+void lowercase(char *word);
+void removePunctuation(char *word);
 
 Graph collectOutgoingURLs () {    
-    char *urls[BUFSIZ] = collectURLs();
+    char *urls[BUFSIZ];
+    int i, j, nURLs = collectURLs(urls);
     
-    Graph g = newGraph(i, urls);    // Make empty graph
+    Graph g = newGraph(nURLs, urls);    // Make empty graph
     for(i = 0; i < numNodes(g); i++){
-        char *fileName = strcat(urls[i], ".txt");   // Open url file
+        char *fileName = strcat(urls[i], ".txt");   // Open each url file
         FILE *urlFile = fopen(fileName, "r");
         
         fscanf(urlFile, "%*[^\n]\n", NULL); // skip #start section 1
@@ -19,13 +22,12 @@ Graph collectOutgoingURLs () {
         char outgoingURL[BUFSIZ];
         fscanf(urlFile, " %s", outgoingURL);
         // Update graph by adding node and outgoing links
-        for (int j = 0; strcmp(outgoingURL, "#end") != 0; j++) { 
+        for (j = 0; strcmp(outgoingURL, "#end") != 0; j++) { 
             Outgoing hyperlink = newNode(outgoingURL);
             addGraphConnection(g, i, hyperlink);
             fscanf(urlFile, " %s", outgoingURL);    // Scan in outgoing URLs
         }
         
-        // add section 2 to inverted index
         fclose(urlFile);
     }
      
@@ -33,28 +35,42 @@ Graph collectOutgoingURLs () {
 }
 
 // update invertedIndex according to section 2 of a url file
-BSTree collectInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url) {
-    char *urls[BUFSIZ] = collectURLs();
+BSTree collectInvertedIndex() {
+    char *urls[BUFSIZ];
     BSTree invertedIndex = newBSTree();
+    int i, j, nURLs = collectURLs(urls);
     
-    fscanf(urlFile, "%*[^\n]\n%*[^\n]\n", NULL,NULL); // skip to text in section 2
-    int i;
+    
     char word[BUFSIZ];
-    
-    fscanf(urlFile, " %s", word);
-    for (i = 0; strcmp(word, "#end") != 0; i++) {
-        invertedIndex = BSTreeInsert(invertedIndex, word);
-        BSTNode node = BSTreeFind(invertedIndex, word);
-        BSTAddPage(url, node);
+    for (i = 0; i < nURLs; i++) {
+        char *fileName = strcat(urls[i], ".txt");   // Open each url file
+        FILE *urlFile = fopen(fileName, "r");
+        
+        fscanf(urlFile, "%*[^#]#%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL); // skip to section 2
+        
+        char word[BUFSIZ];
+        fscanf(urlFile, " %s", word);
+        
+        // process words in section 2
+        for (j = 0; strcmp(word, "#end") != 0; j++) {
+            // normalise the string
+            lowercase(word);
+            removePunctuation(word);
+            
+            // add word and url to BST
+            BSTreeInsert(invertedIndex, word);
+            BSTLink node = BSTreeFind(invertedIndex, word);
+            BSTAddPage(urls[i], node);
+        }
+        fclose(urlFile);
     }
     
     return invertedIndex;
 }
 
 // extract list of urls from collection.txt
-char **collectURLs() {
-    FILE *collection = fopen("collection.txt", "r");
-    char *urls[BUFSIZ];
+int collectURLs(char *urls[BUFSIZ]) {
+    FILE *collection = fopen("test.txt", "r"); //FIXME make it collection.txt
     int i = 0;
     
     // make a list of URLS
@@ -62,8 +78,17 @@ char **collectURLs() {
         i++;
     }
     
-    return urls;
+    return i;
 }
 
+// from https://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
+void lowercase(char *word) {
+    for ( ; *word; ++word) *word = tolower(*word);
+}
 
+void removePunctuation(char *string) {
+    if (string[strlen(string)] == '.' || string[strlen(string)] == ',' || string[strlen(string)] == ';' || string[strlen(string)] == '?') {
+        string[strlen(string)] = '\0';
+    }   
+}
 
