@@ -6,7 +6,7 @@
 typedef struct BSTNode *BSTLink;
 
 typedef struct BSTNode {
-	int value;
+	char *word;
 	BSTLink left, right;
 } BSTNode;
 
@@ -50,58 +50,6 @@ void showBSTreeNode(BSTree t)
 	printf("%d ", t->value);
 }
 
-// print values in infix order
-void BSTreeInfix(BSTree t)
-{
-	if (t == NULL) return;
-	BSTreeInfix(t->left);
-	showBSTreeNode(t);
-	BSTreeInfix(t->right);
-}
-
-// print values in prefix order
-void BSTreePrefix(BSTree t)
-{
-	if (t == NULL) return;
-	showBSTreeNode(t);
-	BSTreePrefix(t->left);
-	BSTreePrefix(t->right);
-}
-
-// print values in postfix order
-void BSTreePostfix(BSTree t)
-{
-	if (t == NULL) return;
-	BSTreePostfix(t->left);
-	BSTreePostfix(t->right);
-	showBSTreeNode(t);
-}
-
-// print values in level-order
-void BSTreeLevelOrder(BSTree t)
-{
-    if (t == NULL) {
-        return;
-    }
-    
-    Queue q = newQueue();
-    QueueJoin(q, t);
-    Item node;
-    
-    while (!QueueIsEmpty(q)) {
-        node = QueueLeave(q);
-
-        showBSTreeNode(node);
-
-        if (node->left != NULL) {
-            QueueJoin(q, node->left);
-        }
-        if (node->right != NULL) {
-            QueueJoin(q, node->right);
-        }
-    }
-}
-
 // count #nodes in BSTree
 int BSTreeNumNodes(BSTree t)
 {
@@ -127,7 +75,7 @@ int BSTreeNumLeaves(BSTree t)
 }
 
 // insert a new value into a BSTree
-BSTree BSTreeInsert(BSTree t, int v)
+BSTree BSTreeInsert(BSTree t, char *word)
 {
 	if (t == NULL)
 		return newBSTNode(v);

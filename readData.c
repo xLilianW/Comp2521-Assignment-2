@@ -20,7 +20,7 @@ Graph collectOutgoingURLs () {
         
         fscanf(urlFile, "%*[^\n]\n", NULL); // skip #start section 1
         
-        char *outgoingURL
+        char *outgoingURL[BUF_SIZ];
         Outgoing prev;
         fscanf(urlFile, " %s", outgoingURL);
         // Update graph by adding node and outgoing links
@@ -37,7 +37,7 @@ Graph collectOutgoingURLs () {
             fscanf(urlFile, " %s", outgoingURL);    // Scan in outgoing URLs
         }
         
-        // add section 2 to invertedIndex
+        // add section 2 to inver
         g->invertedIndex = updateInvertedIndex(g->invertedIndex, urlFile);
         fclose(urlFile);
     }
@@ -48,7 +48,15 @@ Graph collectOutgoingURLs () {
 
 // update invertedIndex according to section 2 of a url file
 BSTree updateInvertedIndex(BSTree invertedIndex, FILE *urlFile) {
- 
+    fscanf(text, "%*[^\n]\n%*[^\n]\n", NULL,NULL); // skip to text in section 2
+    int i;
+    char *word[BUF_SIZ];
+    fscanf(urlFile, " %s", word);
+    
+    for (i = 0; strcmp(outgoingURL, "#end") != 0; j++) { 
+    
+    }
+    
     return invertedIndex;
 
 }

@@ -17,7 +17,6 @@ struct listNode {
     Outgoing next;
 } 
 
-
 // graph representation 
 typedef struct GraphRep {
 	int    nV;          // #URLs
@@ -80,7 +79,7 @@ Graph newGraph(int nV, char ** urls)
 	new->connections = malloc(nV*sizeof(listNode));
 	assert(new->edges != 0);
     new->invertedIndex = NULL;
-    
+
 	return new;
 }
 
