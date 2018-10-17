@@ -20,6 +20,4 @@ void showGraph(Graph, char **);
 
 // find the number of nodes in a graph
 int numNodes(Graph);
-// get the inverted index
-BSTree getInvertedIndex(Graph);
 #endif

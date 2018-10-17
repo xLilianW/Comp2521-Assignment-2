@@ -5,7 +5,6 @@
 #include <assert.h>
 #include <string.h>
 #include "graph.h"
-#include "BSTree.h"
 
 #define TRUE    1
 #define FALSE   0
@@ -22,7 +21,6 @@ typedef struct GraphRep {
 	int    nV;          // #URLs
 	char **URLs;         // stores which url is at each index
 	Outgoing  *connections; // list representation of outgoing links
-	BSTree invertedIndex;   // inverted index of word frequencies
 } GraphRep;
 
 int findURLIndex (Graph g, Outgoing node) {
@@ -104,11 +102,4 @@ int numNodes(Graph g) {
         return 0;
     else 
         return g->nV;
-}
-
-BSTree getInvertedIndex(Graph g) {
-    if (g == NULL) 
-        return NULL;
-    else 
-        return g->invertedIndex;   
 }

@@ -6,15 +6,8 @@
 
 void updateInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url);
 
-Graph collectOutgoingURLs () {
-    FILE *collection = fopen("collection.txt", "r");
-    char *urls[BUFSIZ];
-    int i = 0;
-    
-    // make a list of URLS
-    while (fscanf(collection, " %s", urls[i]) == 1) {
-        i++;
-    }
+Graph collectOutgoingURLs () {    
+    char *urls[BUFSIZ] = collectURLs();
     
     Graph g = newGraph(i, urls);    // Make empty graph
     for(i = 0; i < numNodes(g); i++){
@@ -33,7 +26,6 @@ Graph collectOutgoingURLs () {
         }
         
         // add section 2 to inverted index
-        updateInvertedIndex(getInvertedIndex(g), urlFile, urls[i]);
         fclose(urlFile);
     }
      
@@ -41,17 +33,36 @@ Graph collectOutgoingURLs () {
 }
 
 // update invertedIndex according to section 2 of a url file
-void updateInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url) {
+BSTree collectInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url) {
+    char *urls[BUFSIZ] = collectURLs();
+    BSTree invertedIndex = newBSTree();
+    
     fscanf(urlFile, "%*[^\n]\n%*[^\n]\n", NULL,NULL); // skip to text in section 2
     int i;
     char word[BUFSIZ];
-    fscanf(urlFile, " %s", word);
     
+    fscanf(urlFile, " %s", word);
     for (i = 0; strcmp(word, "#end") != 0; i++) {
         invertedIndex = BSTreeInsert(invertedIndex, word);
         BSTNode node = BSTreeFind(invertedIndex, word);
         BSTAddPage(url, node);
     }
+    
+    return invertedIndex;
+}
+
+// extract list of urls from collection.txt
+char **collectURLs() {
+    FILE *collection = fopen("collection.txt", "r");
+    char *urls[BUFSIZ];
+    int i = 0;
+    
+    // make a list of URLS
+    while (fscanf(collection, " %s", urls[i]) == 1) {
+        i++;
+    }
+    
+    return urls;
 }
 
 
