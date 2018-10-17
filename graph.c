@@ -26,6 +26,16 @@ typedef struct GraphRep {
 	BSTree invertedIndex;   // inverted index of word frequencies
 } GraphRep;
 
+int findURLIndex (Graph g, Ougoing node) {
+    int i = 0;
+    while (g->URLs[i] != NULL) {
+        if (strcmp(URLs[i], node->URL) == 0){
+            return i;
+        }
+    }
+    return -1;
+}
+
 // make an edge
 Edge mkEdge(Graph g, Vertex v, Vertex w)
 {
