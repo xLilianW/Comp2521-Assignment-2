@@ -1,27 +1,27 @@
 #include <stdio.h>
-#include <stdlib,h>
+#include <stdlib.h>
+#include <math.h>
 #include "graph.h"
 #include "readData.c"
 
-Graph g = collectData();
+Graph g = collectOutgoingURLs();
 
 // Returns list of urls with page ranks
-// d = damping factor (0.85), diffPR = difference in page rank sum
-pageRankW(g, d, diffPR, maxIterations){
+void pageRankW(Graph g, int d, double diffPR, int maxIterations){
     
     for(int i = 0; i < g->nV; i++){
         g->connections[i]->pageWeight = 1/g->nV;    // Initialise page weights
     }
     
     int i = 0;
-    diff = diffPR;
+    double diff = diffPR;
     while(i < maxIterations && diff >= diffPR){
         //random calculations
         i++;
+        double prevWeight = g->connections[i]->pageWeight;
         g->connections[i]->pageWeight = calcPageRank();
         
-        
-        //diff = sum of absolute differences of page ranks at t+1 and t for all nodes
+        diff = fabs(g->connections[i]->pageWeight - prevWeight);
     }
 }
 double calcPageRank(Graph g, Page p){    //TODO
@@ -89,7 +89,22 @@ int countOutLinks(Graph g, Page url){    //TODO   (check if this counts itself a
     }
     return ((numOutLinks > 0) ? numOutLinks : 0.5);
 }
-
-orderWeightedPages(){   //TODO
-    // Order urls by page rank
+// Orders urls by page rank
+void orderWeightedPages(Graph g){   //TODO (very inefficient)
+    FILE *pagerankList = fopen("pagerankList.txt", w);
+    double largest = 0.0;
+    int largestIndex = 0;
+    int i = 0;
+    for(i; i < nV; i++){
+        int j = 0;
+        for(j; j < nV; j++){
+            if(g->connections[j]->pageWeight >= largest){
+                largest = g->connections[j]->pageWeight;
+                largestIndex = j;
+            }
+        }
+        Page largestPage = g->connections[largestIndex];
+        fprintf(pagerankList, "%s, %d, %.7f\n", largestPage->URL, countOutLinks(g, largestPage), largestPage->pageWeight);
+    }
+    fclose(pagerankList);
 }
