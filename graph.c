@@ -15,7 +15,7 @@ typedef struct listNode {
     char *URL;
     double pageWeight;
     Outgoing next;
-} listNode
+} listNode;
 
 // graph representation 
 typedef struct GraphRep {
@@ -28,13 +28,12 @@ typedef struct GraphRep {
 int findURLIndex (Graph g, Outgoing node) {
     int i = 0;
     while (g->URLs[i] != NULL) {
-        if (strcmp(URLs[i], node->URL) == 0){
+        if (strcmp(g->URLs[i], node->URL) == 0){
             return i;
         }
     }
     return -1;
 }
-
 
 // create an empty graph
 Graph newGraph(int nV, char ** urls)
@@ -42,6 +41,7 @@ Graph newGraph(int nV, char ** urls)
 	Graph new = malloc(sizeof(GraphRep));
 	assert(new != 0);
 	new->nV = nV; 
+	int i = 0;
 	for (i=0; i < nV; i++) {
 	    new->URLs[i] = strdup(urls[i]);
 	}
