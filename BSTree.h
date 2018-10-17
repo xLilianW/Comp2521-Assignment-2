@@ -4,6 +4,7 @@
 #define BSTREE_H
 
 typedef struct BSTNode *BSTree;
+typedef struct BSTNode *BSTNode;
 
 // create an empty BSTree
 BSTree newBSTree();

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "graph.h"
 #include "BSTree.h"
 
@@ -14,13 +15,13 @@ Graph collectOutgoingURLs () {
     }
     
     Graph g = newGraph(i, urls);    // Make empty graph
-    for(int i = 0; i < g->nV; i++){
+    for(i = 0; i < numNodes(g); i++){
         char *fileName = strcat(urls[i], ".txt");   // Open url file
         FILE *urlFile = fopen(fileName, "r");
         
         fscanf(urlFile, "%*[^\n]\n", NULL); // skip #start section 1
         
-        char *outgoingURL[BUF_SIZ];
+        char outgoingURL[BUFSIZ];
         Outgoing prev;
         fscanf(urlFile, " %s", outgoingURL);
         // Update graph by adding node and outgoing links
@@ -50,7 +51,7 @@ Graph collectOutgoingURLs () {
 BSTree updateInvertedIndex(BSTree invertedIndex, FILE *urlFile, char *url) {
     fscanf(text, "%*[^\n]\n%*[^\n]\n", NULL,NULL); // skip to text in section 2
     int i;
-    char *word[BUF_SIZ];
+    char word[BUFSIZ];
     fscanf(urlFile, " %s", word);
     
     for (i = 0; strcmp(word, "#end") != 0; i++) {

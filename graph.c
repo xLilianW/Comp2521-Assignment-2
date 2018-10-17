@@ -35,37 +35,6 @@ int findURLIndex (Graph g, Outgoing node) {
     return -1;
 }
 
-// make an edge
-Edge mkEdge(Graph g, Vertex v, Vertex w)
-{
-	assert(g != NULL && validV(g,v) && validV(g,w));
-	Edge new = {v,w}; // struct assignment
-	return new;
-}
-
-// insert an Edge
-// - sets (v,w) and (w,v)
-void insertEdge(Graph g, Vertex v, Vertex w, int wt)
-{
-	assert(g != NULL && validV(g,v) && validV(g,w));
-	if (g->edges[v][w] == 0) {
-		g->edges[v][w] = wt;
-		g->edges[w][v] = wt;
-		g->nE++;
-	}
-}
-
-// remove an Edge
-// - unsets (v,w) and (w,v)
-void removeEdge(Graph g, Vertex v, Vertex w)
-{
-	assert(g != NULL && validV(g,v) && validV(g,w));
-	if (g->edges[v][w] != 0) {
-		g->edges[v][w] = 0;
-		g->edges[w][v] = 0;
-		g->nE--;
-	}
-}
 
 // create an empty graph
 Graph newGraph(int nV, char ** urls)
@@ -83,10 +52,10 @@ Graph newGraph(int nV, char ** urls)
 	return new;
 }
 
-listNode newNode(char *URL) {
-    listNode new = malloc(sizeof(listNode));
+struct listNode *newNode(char *url) {
+    listNode *new = malloc(sizeof(listNode));
     assert(new != NULL);
-    new->URL = strdup(URL);
+    new->URL = strdup(url);
     new->next = NULL;
     return new;
 }
@@ -115,3 +84,10 @@ void showGraph(Graph g, char **names)
 	}
 }
 
+// find the number of nodes in the graph
+int numNodes(Graph g) {
+    if (g == NULL) 
+        return 0;
+    else 
+        return g->nV;
+}
