@@ -4,6 +4,7 @@
 #define GRAPH_H
 
 #include <stdio.h>
+#include "BSTree.h"
 
 // graph representation is hidden
 typedef struct GraphRep *Graph;
@@ -12,11 +13,11 @@ typedef struct listNode *Page;
 
 // operations on graphs
 Graph newGraph(int, char **);
-struct listNode *newNode(char *url);
+struct listNode *newNode(char *);
+void addGraphConnection(Graph, int, Outgoing);
 void dropGraph(Graph);
 void showGraph(Graph, char **);
 
 // find the number of nodes in a graph
 int numNodes(Graph);
-
 #endif

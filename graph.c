@@ -5,13 +5,12 @@
 #include <assert.h>
 #include <string.h>
 #include "graph.h"
-#include "BSTree.h"
 
 #define TRUE    1
 #define FALSE   0
 
 // outgoing hyperlink
-struct listNode {
+typedef struct listNode {
     char *URL;
     double pageWeight;
     Outgoing next;
@@ -22,7 +21,6 @@ typedef struct GraphRep {
 	int    nV;          // #URLs
 	char **URLs;         // stores which url is at each index
 	Outgoing  *connections; // list representation of outgoing links
-	BSTree invertedIndex;   // inverted index of word frequencies
 } GraphRep;
 
 int findURLIndex (Graph g, Outgoing node) {
@@ -52,12 +50,26 @@ Graph newGraph(int nV, char ** urls)
 	return new;
 }
 
-struct listNode *newNode(char *url) {
+listNode *newNode(char *url) {
     listNode *new = malloc(sizeof(listNode));
     assert(new != NULL);
     new->URL = strdup(url);
     new->next = NULL;
     return new;
+}
+
+void addGraphConnection(Graph g, int src, Outgoing dest) {
+    if (g->connections[i] == NULL) {
+        g->connections[i] = dest;
+    }
+    else {
+        // append dest to end of list
+        Outgoing curr = g->connections[i];
+        while (curr->next != NULL) {
+            curr = curr->next;
+        }
+        curr->next = dest;
+    }
 }
 
 // free memory associated with graph
