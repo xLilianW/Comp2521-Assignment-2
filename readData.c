@@ -6,7 +6,7 @@
 
 int collectURLs(char *urls[BUFSIZ]);
 void lowercase(char *word);
-void removePunctuation(char *word);
+char *removePunctuation(char *word);
 
 Graph collectOutgoingURLs () {    
     char *urls[BUFSIZ];
@@ -59,7 +59,7 @@ BSTree collectInvertedIndex() {
         for (j = 0; strcmp(word, "#end") != 0; j++) {
             // normalise the string
             lowercase(word);
-            removePunctuation(word);
+            strcpy(word,removePunctuation(word));
             
             // add word and url to BST
             invertedIndex = BSTreeInsert(invertedIndex, word);
@@ -92,9 +92,12 @@ void lowercase(char *word) {
     for ( ; *word; ++word) *word = tolower(*word);
 }
 
-void removePunctuation(char *string) {
-    if (string[strlen(string)] == '.' || string[strlen(string)] == ',' || string[strlen(string)] == ';' || string[strlen(string)] == '?') {
-        string[strlen(string)] = '\0';
-    }   
+// remove trailing punctuation
+char *removePunctuation(char *string) { //FIXME is there a better way? edit string directly
+    char *str = strdup(string);
+    if (string[strlen(string)-1] == '.' || string[strlen(string)-1] == ',' || string[strlen(string)-1] == ';' || string[strlen(string)-1] == '?') {
+        str[strlen(str)-1] = '\0';
+    } 
+    return str;  
 }
 
