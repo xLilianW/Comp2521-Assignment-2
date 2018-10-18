@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "readData.h"
+#include "graph.h"
 
 int main() {
-    char *string = strdup("design.");
-    if (string[strlen(string)-1] == '.' || string[strlen(string)-1] == ',' || string[strlen(string)-1] == ';' || string[strlen(string)-1] == '?') {
-        string[strlen(string)-1] = '\0';
-    } 
-    printf("%s\n", string);
+    Graph g = collectOutgoingURLs();
 }

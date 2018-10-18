@@ -4,6 +4,6 @@
 #include "graph.h"
 #include "BSTree.h"
 
-Graph collectOutgoingUrls();
+Graph collectOutgoingURLs();
 BSTree collectInvertedIndex();
 #endif
