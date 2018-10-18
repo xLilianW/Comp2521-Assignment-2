@@ -6,7 +6,7 @@
 
 int collectURLs(char *urls[BUFSIZ]);
 void lowercase(char *word);
-void removePunctuation(char *word);
+char *removePunctuation(char *word);
 
 Graph collectOutgoingURLs () {    
     char *urls[BUFSIZ];
@@ -44,14 +44,14 @@ BSTree collectInvertedIndex() {
     
     
     char word[BUFSIZ];
-    for (i = 0; i < 1; i++) {
+    for (i = 0; i < nURLs; i++) {
         char *fileName = strdup(urls[i]);
         fileName = realloc(fileName, strlen(urls[i]) + strlen(".txt") + 1);
         strcat(fileName, ".txt");   // Open each url file
         FILE *urlFile = fopen(fileName, "r");
         
-        fscanf(urlFile, "%*[^#]#%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL); // skip to section 2
-        
+        fscanf(urlFile, "%*[^\n]%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL); // skip to section 2 // skip to section 2
+
         char word[BUFSIZ];
         fscanf(urlFile, " %s", word);
         
@@ -59,17 +59,16 @@ BSTree collectInvertedIndex() {
         for (j = 0; strcmp(word, "#end") != 0; j++) {
             // normalise the string
             lowercase(word);
-            removePunctuation(word);
+            strcpy(word,removePunctuation(word));
             
             // add word and url to BST
             invertedIndex = BSTreeInsert(invertedIndex, word);
             BSTLink node = BSTreeFind(invertedIndex, word);
-            //BSTAddPage(urls[i], node);
+            BSTAddPage(urls[i], node);
             fscanf(urlFile, " %s", word);
         }
         fclose(urlFile);
     }
-
     return invertedIndex;
 }
 
@@ -93,9 +92,12 @@ void lowercase(char *word) {
     for ( ; *word; ++word) *word = tolower(*word);
 }
 
-void removePunctuation(char *string) {
-    if (string[strlen(string)] == '.' || string[strlen(string)] == ',' || string[strlen(string)] == ';' || string[strlen(string)] == '?') {
-        string[strlen(string)] = '\0';
-    }   
+// remove trailing punctuation
+char *removePunctuation(char *string) { //FIXME is there a better way? edit string directly
+    char *str = strdup(string);
+    if (string[strlen(string)-1] == '.' || string[strlen(string)-1] == ',' || string[strlen(string)-1] == ';' || string[strlen(string)-1] == '?') {
+        str[strlen(str)-1] = '\0';
+    } 
+    return str;  
 }
 

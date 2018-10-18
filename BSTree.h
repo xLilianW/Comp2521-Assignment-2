@@ -14,7 +14,9 @@ BSTree newBSTree();
 // free memory associated with BSTree
 void dropBSTree(BSTree);
 // print the BST in infix order
-void BSTreeInfix(BSTree t);
+void BSTreeInfix(BSTree, FILE *);
+// print the BST node and its pageList
+void showBSTNodePages(BSTLink, FILE *);
 
 // count #nodes in BSTree
 int BSTreeNumNodes(BSTree);
