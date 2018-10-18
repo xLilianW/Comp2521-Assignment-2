@@ -14,7 +14,9 @@ Graph collectOutgoingURLs () {
     
     Graph g = newGraph(nURLs, urls);    // Make empty graph
     for(i = 0; i < numNodes(g); i++){
-        char *fileName = strcat(urls[i], ".txt");   // Open each url file
+        char *fileName = strdup(urls[i]);
+        fileName = realloc(fileName, strlen(urls[i]) + strlen(".txt") + 1);
+        strcat(fileName, ".txt");   // Open each url file
         FILE *urlFile = fopen(fileName, "r");
         
         fscanf(urlFile, "%*[^\n]\n", NULL); // skip #start section 1

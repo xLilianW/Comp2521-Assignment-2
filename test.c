@@ -3,15 +3,10 @@
 #include <string.h>
 
 int main() {
-    char *urls[BUFSIZ], url[BUFSIZ];
-    FILE *collection = fopen("test.txt", "r"); //FIXME make it collection.txt
-    int i = 0;
-    
-    // make a list of URLS
-    while (fscanf(collection, " %s", url) == 1) {
-        urls[i] = malloc(strlen(url) + 1);
-        strcpy(urls[i], url);
-        printf("%s\n", urls[i]);
-        i++;
-    }
+    char *string = "hello.";
+    char *p = &string[strlen(string)-1];
+    if (strcmp(p, ".") == 0) {
+        *p = '\0';
+    }   
+    printf("%s", string);
 }
