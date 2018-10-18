@@ -21,7 +21,8 @@ BSTLink newBSTNode(char *word)
 {
 	BSTLink new = malloc(sizeof(BSTNode));
 	assert(new != NULL);
-	new->word = word;
+	new->word = strdup(word);
+	new->pageList = NULL;
 	new->left = new->right = NULL;
 	return new;
 }
@@ -52,12 +53,22 @@ void dropBSTree(BSTree t)
 }
 
 // print values in infix order, from lab 10
-void BSTreeInfix(BSTree t)
+void BSTreeInfix(BSTree t, FILE *out)
 {
 	if (t == NULL) return;
-	BSTreeInfix(t->left);
-	printf("%s", t->word);
-	BSTreeInfix(t->right);
+	BSTreeInfix(t->left, out);
+	showBSTNodePages(t, out);
+	BSTreeInfix(t->right, out);
+}
+
+void showBSTNodePages(BSTLink node, FILE *out) {
+    fprintf(out, "%s ", node->word);
+    Page curr = node->pageList;
+    while (curr != NULL) {
+        fprintf(out, " %s", curr->URL);
+        curr = curr->next;
+    }
+    fprintf(out, "\n");
 }
 
 // count #nodes in BSTree
@@ -98,6 +109,7 @@ BSTree BSTreeInsert(BSTree t, char *word)
 	return t;
 }
 
+// add a page to a words pageLi
 void BSTAddPage(char *url, BSTLink node) {
     Page newPage = newBSTPage(url);
     Page curr = node->pageList;
@@ -105,7 +117,9 @@ void BSTAddPage(char *url, BSTLink node) {
         node->pageList = newPage;
     }
     else {
+        if (strcmp(curr->URL, url) == 0) return;
         while (curr->next != NULL) {
+            if (strcmp(curr->URL, url) == 0) return;
             curr = curr->next;
         }
         curr->next = newPage;

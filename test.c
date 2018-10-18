@@ -3,10 +3,9 @@
 #include <string.h>
 
 int main() {
-    char *string = "hello.";
-    char *p = &string[strlen(string)-1];
-    if (strcmp(p, ".") == 0) {
-        *p = '\0';
-    }   
-    printf("%s", string);
+    FILE *urlFile = fopen("url11.txt", "r");    
+    fscanf(urlFile, "%*[^\n]%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL); // skip to section 2
+    char word[30];
+    fscanf(urlFile, " %s", word);
+    printf("%s", word);
 }

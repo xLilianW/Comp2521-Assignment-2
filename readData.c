@@ -44,14 +44,14 @@ BSTree collectInvertedIndex() {
     
     
     char word[BUFSIZ];
-    for (i = 0; i < 1; i++) {
+    for (i = 0; i < nURLs; i++) {
         char *fileName = strdup(urls[i]);
         fileName = realloc(fileName, strlen(urls[i]) + strlen(".txt") + 1);
         strcat(fileName, ".txt");   // Open each url file
         FILE *urlFile = fopen(fileName, "r");
         
-        fscanf(urlFile, "%*[^#]#%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL); // skip to section 2
-        
+        fscanf(urlFile, "%*[^\n]%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL); // skip to section 2 // skip to section 2
+
         char word[BUFSIZ];
         fscanf(urlFile, " %s", word);
         
@@ -64,12 +64,11 @@ BSTree collectInvertedIndex() {
             // add word and url to BST
             invertedIndex = BSTreeInsert(invertedIndex, word);
             BSTLink node = BSTreeFind(invertedIndex, word);
-            //BSTAddPage(urls[i], node);
+            BSTAddPage(urls[i], node);
             fscanf(urlFile, " %s", word);
         }
         fclose(urlFile);
     }
-
     return invertedIndex;
 }
 
