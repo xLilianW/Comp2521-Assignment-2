@@ -5,7 +5,8 @@
 
 int main() {
     BSTree invertedIndex = collectInvertedIndex();
-    //FILE *index = fopen("invertedIndex.txt", "w");
-    BSTreeInfix(invertedIndex, stdout);
+    FILE *index = fopen("invertedIndex.txt", "w");
+    BSTreeInfix(invertedIndex, index);
+    fclose(index);
 }
 

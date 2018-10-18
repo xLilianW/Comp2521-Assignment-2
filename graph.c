@@ -9,7 +9,6 @@
 #define TRUE    1
 #define FALSE   0
 
-// outgoing hyperlink
 typedef struct graphListNode {
     char *URL;
     double pageWeight;
@@ -39,6 +38,7 @@ Graph newGraph(int nV, char ** urls)
 	Graph new = malloc(sizeof(GraphRep));
 	assert(new != 0);
 	new->nV = nV; 
+	new->URLs = malloc(nV*BUFSIZ);
 	int i = 0;
 	for (i=0; i < nV; i++) {
 	    new->URLs[i] = strdup(urls[i]);
@@ -64,6 +64,7 @@ void addGraphConnection(Graph g, int src, Outgoing dest) {
     else {
         // append dest to end of list
         Outgoing curr = g->connections[src];
+        printf("%s", curr->URL);
         while (curr->next != NULL) {
             curr = curr->next;
         }
