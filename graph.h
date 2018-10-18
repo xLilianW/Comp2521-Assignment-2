@@ -8,15 +8,13 @@
 
 // graph representation is hidden
 typedef struct GraphRep *Graph;
-typedef struct listNode *Outgoing;
-typedef struct listNode *Page;
+typedef struct graphListNode *Outgoing;
 
 // operations on graphs
 Graph newGraph(int, char **);
-struct listNode *newNode(char *);
+struct graphListNode *newNode(char *);
 void addGraphConnection(Graph, int, Outgoing);
 void dropGraph(Graph);
-void showGraph(Graph, char **);
 
 // find the number of nodes in a graph
 int numNodes(Graph);

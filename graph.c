@@ -10,11 +10,11 @@
 #define FALSE   0
 
 // outgoing hyperlink
-typedef struct listNode {
+typedef struct graphListNode {
     char *URL;
     double pageWeight;
     Outgoing next;
-} listNode;
+} graphListNode;
 
 // graph representation 
 typedef struct GraphRep {
@@ -43,15 +43,14 @@ Graph newGraph(int nV, char ** urls)
 	for (i=0; i < nV; i++) {
 	    new->URLs[i] = strdup(urls[i]);
 	}
-	new->connections = malloc(nV*sizeof(listNode));
-	assert(new->edges != 0);
-    new->invertedIndex = NULL;
+	new->connections = malloc(nV*sizeof(graphListNode));
+	assert(new->connections != 0);
 
 	return new;
 }
 
-listNode *newNode(char *url) {
-    listNode *new = malloc(sizeof(listNode));
+graphListNode *newNode(char *url) {
+    graphListNode *new = malloc(sizeof(graphListNode));
     assert(new != NULL);
     new->URL = strdup(url);
     new->next = NULL;
@@ -59,12 +58,12 @@ listNode *newNode(char *url) {
 }
 
 void addGraphConnection(Graph g, int src, Outgoing dest) {
-    if (g->connections[i] == NULL) {
-        g->connections[i] = dest;
+    if (g->connections[src] == NULL) {
+        g->connections[src] = dest;
     }
     else {
         // append dest to end of list
-        Outgoing curr = g->connections[i];
+        Outgoing curr = g->connections[src];
         while (curr->next != NULL) {
             curr = curr->next;
         }
@@ -77,23 +76,6 @@ void dropGraph(Graph g)
 {
 	assert(g != NULL);
 	// not needed for this lab
-}
-
-// display graph, using names for vertices
-void showGraph(Graph g, char **names)
-{
-	assert(g != NULL);
-	printf("#vertices=%d, #edges=%d\n\n",g->nV,g->nE);
-	int v, w;
-	for (v = 0; v < g->nV; v++) {
-		printf("%d %s\n",v,names[v]);
-		for (w = 0; w < g->nV; w++) {
-			if (g->edges[v][w]) {
-				printf("\t%s (%d)\n",names[w],g->edges[v][w]);
-			}
-		}
-		printf("\n");
-	}
 }
 
 // find the number of nodes in the graph
