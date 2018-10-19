@@ -24,7 +24,7 @@ Graph collectOutgoingURLs () {
         char outgoingURL[BUFSIZ];
         fscanf(urlFile, " %s", outgoingURL);
         // Update graph by adding node and outgoing links
-        for (j = 0; strcmp(outgoingURL, "#end") != 0; j++) { 
+        while (strcmp(outgoingURL, "#end") != 0) { 
             Outgoing hyperlink = newNode(outgoingURL);
             addGraphConnection(g, i, hyperlink);
             fscanf(urlFile, " %s", outgoingURL);    // Scan in outgoing URLs
