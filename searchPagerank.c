@@ -6,25 +6,27 @@ struct listNode {
     char *URL;
     double pageWeight;
     int countTerms;
-    URL next;
+    URL prev, next;
 } listNode;
 
-// graph representation 
-typedef struct GraphRep {
-	int    nV;          // #URLs (maybe not necessary)
-	URL  SearchList; // list representation of outgoing links
-} GraphRep;
-
-typedef struct GraphRep *Graph;
 typedef struct listNode *URL;
 
+URL newURLNode(char *url) {
+    URL new = malloc(sizeof(listNode));
+    assert(new != NULL);
+    new->URL = strdup(url);
+    new->countTerms = 1;
+    new->prev = new->next = NULL;
+    reaturn new;
+}
+
 void main(int argc, char *argv[]){
-    URL URLList;
+    URL URLList = NULL;
     
     // Make list of URLs based on number of search terms in each URL
     int i;
-    for(i = 0; i < argc - 1; i++){
-        URLList = makeURLList(URLList, argv[i]);
+    for(i = 1; i < argc; i++){
+        URLList = updateURLList(URLList, argv[i]);
     }
     
 }
@@ -32,66 +34,124 @@ void main(int argc, char *argv[]){
 // Makes list of URLs if they contain search term
 // Places URLs with more search terms closer to start
 // Places URLs with higher pageWeight closer to start
-URL makeURLList(URL list, char *searchTerm){
-    URL *URLArray = sTermURLs(searchTerm);
-    
-    //check if list is empty
-    URL start = list;
-    URL curr = list;    //should be last node of list
-    
+URL updateURLList(URL listHead, char *searchTerm){
+    // collect list of URLs containing the search term
+    char *URLArray[BUFSIZ]
+    int nURLs = sTermURLs(searchTerm, URLArray);
+
+    URL url = NULL;
+    URL curr = listHead;    
     int i = 0;
-    while(URLArray[i] != NULL){
-        if(URLInList(list, URLArray[i])){   // Moves existing URL to front of list
-            //move to front, removing duplicate
-            //move should account for pageweight too
-            
-            URLArray[i]->countTerms++;
-        }else{    // Adds new URL to end of list //TODO include pageWeight
-            URLArray[i]->countTerms = 1;
-            curr->next = URLArray[i];
-            curr = curr->next;
-        }
+    
+    // insert the first url into the list
+    if (listHead == NULL && nURLS > 0) {
+        url = newURLNode(URLArray[0]);
+        listHead = url;
+        i++;
     }
-    return start;
+    
+    // make changes to the URLList according to the URLs containing the search term
+    while(i < nURLs){
+        if((url = URLInList(listHead, URLArray[i])) != NULL){   // Moves existing URL to front of list
+            url->countTerms++;
+            listHead = sortList(listHead, url); //position url on countTerms and pageweight
+        }else{    // Adds new URL to list //TODO include pageWeight
+            url = newURLNode(URLArray[i]);
+            listHead = insertURL(listHead, url); //position url on countTerms and pageweight
+        }
+        i++;
+    }
+    return listHead;
 }
 
 // Returns array of URLs matching search term
-char *sTermURLs(char *searchTerm){
+int *sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
+    char *searchTerm = "mars";
     FILE *invertedIndex = fopen("invertedIndex.txt", "r");
-    char fileLine[BUF_SIZ];
+    char fileLine[BUFSIZ], *searchTermLine;
     
     // Loops through entire file and finds search term
-    int found = FALSE;
-    while(fgets(fileLine, BUF_SIZ, invertedIndex) != NULL && found == FALSE){
+    while(fgets(fileLine, BUFSIZ, invertedIndex) != NULL){
         if(strstr(fileLine, searchTerm) != NULL){
-            fileLine = strtok(fileLine, " ");    // Removes search term leaving url list
-            found = TRUE;
+            //TODO check if need to use strsep instead
+            searchTermLine = strdup(fileLine);
+            strsep(&searchTermLine, " ");    // Removes search term leaving url list
+            strsep(&searchTermLine, " ");    // Skip the second space
+            break;
         }
     }
     
     // Extract each URL matching search term and place into array
-    char *urlToken = strtok(fileLine, " ");
-    char **urlArray = malloc(strlen(urlToken));    //need calloc?
+    char *urlToken = strsep(&searchTermLine, " ");
     int i = 0;
-    while(urlToken != NULL){
-        //need to resize array?
-        urlArray[i] = strdup(urlToken);
-        urlToken = strtok(fileLine, " ");
+    while(searchTermLine != '\0'){
+        urlArray[i] = malloc(strlen(urlToken) + 1);
+        strcpy(urlArray[i], urlToken);
+        urlToken = strsep(&searchTermLine, " ");
         i++;
     }
     
-    fclose("invertedIndex.txt");
+    fclose(invertedIndex);
+    return i;
 }
 
 // Returns TRUE if url is in list
-int URLInList(URL list, URL u){
+URL URLInList(URL list, char *u){
     URL curr = list;
     while(curr != NULL){
         if(strcmp(curr->URL, u) == 0){
-            return TRUE;
+            return curr;
         }
         curr = curr->next;
     }
-    return FALSE;
+    return NULL;
 }
+
+//FIXME make this more efficient
+// insert a URL into the URLList
+URL insertURL(URL listHead, URL url) {
+    URL curr = listHead;
+    
+    // get to the nodes with the same countTerms as url
+    while (curr->next != NULL && curr->countTerms > url->countTerms) {
+        curr = curr->next;
+    }
+    if (curr->next == NULL){ // all nodes have a higher countTerms than url
+        curr->next = url; // append url at the end
+    }else{ // insert based on pageweight
+        while (curr->next != NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight) {
+            curr = curr->next;
+        }
+        //the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
+        if (curr->next == NULL){
+            if (curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight){ // append url
+                curr->next = url;
+                url->prev = curr;
+            }else{ // url goes before curr
+                url->prev = curr->prev;
+                curr->prev = url;
+                url->next = curr;
+            }
+        }else{ // not at the end
+            // put url before curr
+            url->prev = curr->prev;
+            curr->prev = url;
+            url->next = curr;
+        }
+    }
+
+    return listHead;
+}
+
+//TODO
+URL sortList(URL listHead, URL url) {
+    URL curr = listHead;
+    
+    // find the correct position for the url
+    // connect url->prev to url->next
+    // reposition url
+
+    return listHead;
+}
+
 
