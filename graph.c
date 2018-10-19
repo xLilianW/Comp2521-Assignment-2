@@ -73,7 +73,6 @@ void addGraphConnection(Graph g, int src, Outgoing dest) {
     else {
         // append dest to end of list
         Outgoing curr = g->connections[src];
-        printf("%s", curr->URL);
         while (curr->next != NULL) {
             curr = curr->next;
         }
@@ -105,6 +104,7 @@ void showGraph(Graph g) {
         curr = g->connections[i];
         while (curr != NULL) {
             printf(" %s", curr->URL);
+            curr = curr->next;
         }
         printf("\n");
     }
