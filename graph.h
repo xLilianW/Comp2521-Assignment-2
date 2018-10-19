@@ -18,4 +18,5 @@ void dropGraph(Graph);
 
 // find the number of nodes in a graph
 int numNodes(Graph);
+void showGraph(Graph g);
 #endif

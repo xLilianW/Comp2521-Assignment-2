@@ -18,7 +18,7 @@ typedef struct graphListNode {
 // graph representation 
 typedef struct GraphRep {
 	int    nV;          // #URLs
-	char **URLs;         // stores which url is at each index
+    char **URLs;        // list of URLs at their mapped index
 	Outgoing  *connections; // list representation of outgoing links
 } GraphRep;
 
@@ -33,18 +33,27 @@ int findURLIndex (Graph g, Outgoing node) {
 }
 
 // create an empty graph
-Graph newGraph(int nV, char ** urls)
+Graph newGraph(int nV, char **urls)
 {
 	Graph new = malloc(sizeof(GraphRep));
 	assert(new != 0);
 	new->nV = nV; 
-	new->URLs = malloc(nV*BUFSIZ);
 	int i = 0;
+	
+	new->URLs = malloc(nV*BUFSIZ);
+    assert(new->URLs != 0);
 	for (i=0; i < nV; i++) {
-	    new->URLs[i] = strdup(urls[i]);
+	    new->URLs[i] = malloc(strlen(urls[i])+1);
+	    assert(new->URLs[i] != 0);
+	    strcpy(new->URLs[i], urls[i]);
 	}
+	
 	new->connections = malloc(nV*sizeof(graphListNode));
 	assert(new->connections != 0);
+	for (i=0; i < nV; i++) {
+	    new->connections[i] = NULL;
+	}
+
 
 	return new;
 }
@@ -86,3 +95,20 @@ int numNodes(Graph g) {
     else 
         return g->nV;
 }
+
+//FIXME FOR TESTING, remove after
+void showGraph(Graph g) {
+    int i;
+    Outgoing curr = NULL; 
+    for (i=0; i < g->nV; i++) {
+        printf("%s:", g->URLs[i]);
+        curr = g->connections[i];
+        while (curr != NULL) {
+            printf(" %s", curr->URL);
+        }
+        printf("\n");
+    }
+}
+
+
+
