@@ -6,12 +6,12 @@
 
 typedef struct BSTListNode {
     char *URL;
-    Page next;
+    BSTPage next;
 } BSTListNode;
 
 typedef struct BSTNode {
 	char *word;
-	Page pageList;
+	BSTPage BSTPageList;
 	BSTLink left, right;
 } BSTNode;
 
@@ -22,15 +22,15 @@ BSTLink newBSTNode(char *word)
 	BSTLink new = malloc(sizeof(BSTNode));
 	assert(new != NULL);
 	new->word = strdup(word);
-	new->pageList = NULL;
+	new->BSTPageList = NULL;
 	new->left = new->right = NULL;
 	return new;
 }
 
-// make a new page
+// make a new BSTPage
 static
-Page newBSTPage(char *url) {
-    Page new = malloc(sizeof(BSTListNode));
+BSTPage newBSTBSTPage(char *url) {
+    BSTPage new = malloc(sizeof(BSTListNode));
     assert(new != NULL);
     new->URL = strdup(url);
     new->next = NULL;
@@ -57,13 +57,13 @@ void BSTreeInfix(BSTree t, FILE *out)
 {
 	if (t == NULL) return;
 	BSTreeInfix(t->left, out);
-	showBSTNodePages(t, out);
+	showBSTNodeBSTPages(t, out);
 	BSTreeInfix(t->right, out);
 }
 
-void showBSTNodePages(BSTLink node, FILE *out) {
+void showBSTNodeBSTPages(BSTLink node, FILE *out) {
     fprintf(out, "%s ", node->word);
-    Page curr = node->pageList;
+    BSTPage curr = node->BSTPageList;
     while (curr != NULL) {
         fprintf(out, " %s", curr->URL);
         curr = curr->next;
@@ -109,12 +109,12 @@ BSTree BSTreeInsert(BSTree t, char *word)
 	return t;
 }
 
-// add a page to a words pageLi
-void BSTAddPage(char *url, BSTLink node) {
-    Page newPage = newBSTPage(url);
-    Page curr = node->pageList;
+// add a BSTPage to a words BSTPageLi
+void BSTAddBSTPage(char *url, BSTLink node) {
+    BSTPage newBSTPage = newBSTBSTPage(url);
+    BSTPage curr = node->BSTPageList;
     if (curr == NULL) {
-        node->pageList = newPage;
+        node->BSTPageList = newBSTPage;
     }
     else {
         if (strcmp(curr->URL, url) == 0) return;
@@ -122,7 +122,7 @@ void BSTAddPage(char *url, BSTLink node) {
             if (strcmp(curr->URL, url) == 0) return;
             curr = curr->next;
         }
-        curr->next = newPage;
+        curr->next = newBSTPage;
     }
 }
 
