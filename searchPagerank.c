@@ -55,7 +55,7 @@ URL updateURLList(URL listHead, char *searchTerm){
         if((url = URLInList(listHead, URLArray[i])) != NULL){   // Moves existing URL to front of list
             url->countTerms++;
             listHead = sortList(listHead, url); //position url on countTerms and pageweight
-        }else{    // Adds new URL to list //TODO include pageWeight
+        }else{    // Adds new URL to list
             url = newURLNode(URLArray[i]);
             listHead = insertURL(listHead, url); //position url on countTerms and pageweight
         }
@@ -108,7 +108,7 @@ URL URLInList(URL list, char *u){
 }
 
 //FIXME make this more efficient
-// insert a URL into the URLList
+// Insert a URL into the URLList
 URL insertURL(URL listHead, URL url) {
     URL curr = listHead;
     
@@ -116,13 +116,15 @@ URL insertURL(URL listHead, URL url) {
     while (curr->next != NULL && curr->countTerms > url->countTerms) {
         curr = curr->next;
     }
+    
     if (curr->next == NULL){ // all nodes have a higher countTerms than url
         curr->next = url; // append url at the end
+        url->prev = curr;
     }else{ // insert based on pageweight
         while (curr->next != NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight) {
             curr = curr->next;
         }
-        //the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
+        //FIXME the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
         if (curr->next == NULL){
             if (curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight){ // append url
                 curr->next = url;
@@ -143,15 +145,19 @@ URL insertURL(URL listHead, URL url) {
     return listHead;
 }
 
-//TODO
+// Deletes old url and inserts new url into correct position
 URL sortList(URL listHead, URL url) {
-    URL curr = listHead;
-    
-    // find the correct position for the url
-    // connect url->prev to url->next
-    // reposition url
+    listHead = deleteURL(listHead, url);
+    listHead = insertURL(listHead, url);
 
     return listHead;
 }
 
-
+URL deleteURL(URL listHead, URL url){
+    url->prev = url->next;
+    url->next = url->prev;
+    free(url->URL);
+    free(url);
+    
+    return listHead;
+}
