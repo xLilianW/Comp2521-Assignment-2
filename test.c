@@ -2,19 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include "BSTree.h"
 #include "readData.h"
+#include "pagerank.c"
 #include "graph.h"
 
 #define TRUE    1
 #define FALSE   0
 
-int main() {
-  char *s = "url32, 3, 8.649292\n" ;
-  double d ;
-  char str[50];
-   int num = 0;
-  sscanf( s, "%s %d, %lf\n", str, &num, &d ) ;
-
-  printf("%s %d, %lf\n", str, num, d ); 
+int main(int argc, char *argv[]) {
+    Graph g = collectOutgoingURLs();
+    pageRankW(g, atof(argv[1]), atof(argv[2]), atoi(argv[3]));
+    showGraph(g);
+    return 0;
 }
 

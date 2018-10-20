@@ -14,7 +14,7 @@ int countOutLinks(Graph, GraphPage);
 void orderWGraphPages(Graph);
 int findURLIndex(Graph, GraphPage);
 
-// Returns list of urls with page ranks
+// Returns list of urls with page ranks (doesnt return anything)
 void pageRankW(Graph g, int d, double diffPR, int maxIterations){
     
     for(int i = 0; i < numNodes(g); i++){
@@ -24,12 +24,10 @@ void pageRankW(Graph g, int d, double diffPR, int maxIterations){
     int i = 0;
     double diff = diffPR;
     while(i < maxIterations && diff >= diffPR){
-        //random calculations
-        i++;
         double prevWeight = getPageWeight(getPage(g, i));
         setPageWeight(getPage(g, i), calcPageRank(g, getPage(g, i), d));
-        
         diff = fabs(getPageWeight(getPage(g, i)) - prevWeight);
+        i++;
     }
 }
 double calcPageRank(Graph g, GraphPage p, int d){    //TODO
