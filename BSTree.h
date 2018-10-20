@@ -7,7 +7,7 @@
 
 typedef struct BSTNode *BSTree;
 typedef struct BSTNode *BSTLink;
-typedef struct BSTListNode *Page;
+typedef struct BSTListNode *BSTPage;
 
 // create an empty BSTree
 BSTree newBSTree();
@@ -15,8 +15,8 @@ BSTree newBSTree();
 void dropBSTree(BSTree);
 // print the BST in infix order
 void BSTreeInfix(BSTree, FILE *);
-// print the BST node and its pageList
-void showBSTNodePages(BSTLink, FILE *);
+// print the BST node and its BSTPageList
+void showBSTNodeBSTPages(BSTLink, FILE *);
 
 // count #nodes in BSTree
 int BSTreeNumNodes(BSTree);
@@ -25,8 +25,8 @@ int BSTreeNumLeaves(BSTree);
 
 // insert a new value into a BSTree
 BSTree BSTreeInsert(BSTree, char *);
-// insert a page char *o the pageList of a word
-void BSTAddPage(char *, BSTLink );
+// insert a BSTPage char *o the BSTPageList of a word
+void BSTAddBSTPage(char *, BSTLink );
 // find a word in the tree
 struct BSTNode *BSTreeFind(BSTree, char *);
 // delete a value from a BSTree

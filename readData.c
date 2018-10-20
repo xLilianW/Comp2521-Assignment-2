@@ -64,7 +64,7 @@ BSTree collectInvertedIndex() {
             // add word and url to BST
             invertedIndex = BSTreeInsert(invertedIndex, word);
             BSTLink node = BSTreeFind(invertedIndex, word);
-            BSTAddPage(urls[i], node);
+            BSTAddBSTPage(urls[i], node);
             fscanf(urlFile, " %s", word);
         }
         fclose(urlFile);
