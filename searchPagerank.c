@@ -135,6 +135,7 @@ URL insertURL(URL listHead, URL url) {
     printf("Inserting: %s\n", url->URL);
     URL curr = listHead;
     
+    // empty url list
     if (listHead == NULL) {
         return url;
     }
@@ -143,29 +144,24 @@ URL insertURL(URL listHead, URL url) {
     while (curr->next != NULL && curr->countTerms > url->countTerms) {
         curr = curr->next;
     }
+    // get to the right pageWeight position
+    while (curr->next != NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight) {
+        curr = curr->next;
+    }
     
-    //if (curr->next == NULL){ // all nodes have a higher countTerms than url
-    //    if (
-    //    curr->next = url; // append url at the end
-    //    url->prev = curr;
-    //}else{ // insert based on pageweight
-        while (curr->next != NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight) {
-            curr = curr->next;
+    //FIXME the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
+    //FIXME Check if these are all the cases
+    if (curr->next == NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight){ // append url
+        curr->next = url;
+        url->prev = curr;
+    }else{ // put url before curr
+        if (curr->prev != NULL) {
+            curr->prev->next = url;
         }
-        //FIXME the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
-        //FIXME Check if these are all the cases
-        if (curr->next == NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight){ // append url
-            curr->next = url;
-            url->prev = curr;
-        }else{ // put url before curr
-            if (curr->prev != NULL) {
-                curr->prev->next = url;
-            }
-            url->prev = curr->prev;
-            curr->prev = url;
-            url->next = curr;
-        }
-    //}
+        url->prev = curr->prev;
+        curr->prev = url;
+        url->next = curr;
+    }
     
     if (url->prev == NULL)
         return url;
@@ -184,7 +180,8 @@ URL sortList(URL listHead, URL url) {
 // delete a url from the URLList
 URL deleteURL(URL listHead, URL url){
     if (listHead == url) {
-        url->next = NULL;
+        if (url->next != NULL) 
+            url->next->prev = NULL;
         return url->next;
     }
     else {
@@ -195,7 +192,6 @@ URL deleteURL(URL listHead, URL url){
         // Change prev only if node to be deleted is NOT the first node 
         if(url->prev != NULL) 
             url->prev->next = url->next;   
-        url->prev = url->next = NULL;
     }
     return listHead;
 }
