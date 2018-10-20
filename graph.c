@@ -95,6 +95,21 @@ int numNodes(Graph g) {
         return g->nV;
 }
 
+// Changes page weight to w
+void setPageWeight(GraphPage p, double w){
+    p->pageWeight = w;
+}
+
+// Returns page weight
+double getPageWeight(GraphPage p){
+    return p->pageWeight;
+}
+
+// Returns url of page
+char *getURL(GraphPage p){
+    return p->URL;
+}
+
 //FIXME FOR TESTING, remove after
 void showGraph(Graph g) {
     int i;

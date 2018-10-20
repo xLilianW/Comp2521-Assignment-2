@@ -3,8 +3,6 @@
 #include <math.h>
 #include "graph.h"
 
-typedef struct graphListNode *GraphPage;
-
 void pageRankW(Graph, int, double, int);
 double calcPageRank(Graph, GraphPage, int);
 double inLinkPopularity(Graph, GraphPage, GraphPage);
@@ -12,14 +10,14 @@ int countInLinks(Graph, GraphPage);
 int isInLink(Graph, GraphPage, GraphPage);
 double outLinkPopularity(Graph, GraphPage, GraphPage);
 int countOutLinks(Graph, GraphPage);
-void orderWeightedGraphPages(Graph);
+void orderWGraphPages(Graph);
 
 
 // Returns list of urls with page ranks
 void pageRankW(Graph g, int d, double diffPR, int maxIterations){
     
-    for(int i = 0; i < g->nV; i++){
-        g->connections[i]->pageWeight = 1/g->nV;    // Initialise page weights
+    for(int i = 0; i < numNodes(g); i++){
+        g->connections[i]->pageWeight = 1/numNodes(g);    // Initialise page weights
     }
     
     int i = 0;
