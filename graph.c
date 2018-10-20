@@ -95,6 +95,12 @@ int numNodes(Graph g) {
         return g->nV;
 }
 
+// Returns page with index i
+GraphPage getPage(Graph g, int i){
+    //TODO check if returns null when page doesnt exist
+    return g->connections[i];
+}
+
 // Changes page weight to w
 void setPageWeight(GraphPage p, double w){
     p->pageWeight = w;

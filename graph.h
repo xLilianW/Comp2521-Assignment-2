@@ -19,7 +19,8 @@ void dropGraph(Graph);
 // find the number of nodes in a graph
 int numNodes(Graph);
 void showGraph(Graph);
-void setPageWeight(GraphPage);
-double getPageWeight(GraphPage, double);
+GraphPage getPage(Graph, int);
+void setPageWeight(GraphPage, double);
+double getPageWeight(GraphPage);
 char *getURL(GraphPage);
 #endif
