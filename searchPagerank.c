@@ -141,6 +141,7 @@ URL insertURL(URL listHead, URL url) {
     
     // empty url list
     if (listHead == NULL) {
+        printf("HELLO");
         return url;
     }
     
@@ -156,6 +157,7 @@ URL insertURL(URL listHead, URL url) {
     //FIXME the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
     //FIXME Check if these are all the cases
     if (curr->next == NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight){ // append url
+        printf("HELLO 2");
         curr->next = url;
         url->prev = curr;
     }else{ // put url before curr
@@ -165,6 +167,7 @@ URL insertURL(URL listHead, URL url) {
         url->prev = curr->prev;
         curr->prev = url;
         url->next = curr;
+        printf("HELLO 3");
     }
     
     if (url->prev == NULL)
