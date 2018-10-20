@@ -87,6 +87,10 @@ int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
     FILE *invertedIndex = fopen("invertedIndex.txt", "r");
     char fileLine[BUFSIZ], *searchTermLine;
     
+    // append " " to the search term so the exact word is found in the file
+    //searchTerm = realloc(searchTerm, strlen(searchTerm) + 2); //FIXME necessary?
+    strcat(searchTerm, " ");
+    
     // Loops through entire file and finds search term
     while(fgets(fileLine, BUFSIZ, invertedIndex) != NULL){
         if(strstr(fileLine, searchTerm) != NULL){
