@@ -222,9 +222,11 @@ double getPageWeight(char *url) {
 void showURLList(URL listHead) {
     printf("\n========\n");
     URL curr = listHead;
-    while(curr != NULL) {
+    int i = 0;
+    while(curr != NULL && i < 30) {
         printf("%s %d %lf\n", curr->URL, curr->countTerms, curr->pageWeight);
         curr = curr->next;
+        i++;
     }
 }
 
