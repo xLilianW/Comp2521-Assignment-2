@@ -1,6 +1,9 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
 
-#define TRUE    1
-#define FALSE   0
+typedef struct listNode *URL;
 
 struct listNode {
     char *URL;
@@ -9,18 +12,17 @@ struct listNode {
     URL prev, next;
 } listNode;
 
-typedef struct listNode *URL;
+URL newURLNode(char *url);
+URL updateURLList(URL listHead, char *searchTerm);
+int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]);
+URL URLInList(URL list, char *u);
+URL insertURL(URL listHead, URL url);
+URL sortList(URL listHead, URL url);
+URL deleteURL(URL listHead, URL url);
+double getPageWeight(char *url);
+void showURLList(URL listHead);
 
-URL newURLNode(char *url) {
-    URL new = malloc(sizeof(listNode));
-    assert(new != NULL);
-    new->URL = strdup(url);
-    new->countTerms = 1;
-    new->prev = new->next = NULL;
-    reaturn new;
-}
-
-void main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
     URL URLList = NULL;
     
     // Make list of URLs based on number of search terms in each URL
@@ -29,6 +31,19 @@ void main(int argc, char *argv[]){
         URLList = updateURLList(URLList, argv[i]);
     }
     
+    // Print the results 
+    showURLList(URLList);
+    
+}
+
+URL newURLNode(char *url) {
+    URL new = malloc(sizeof(listNode));
+    assert(new != NULL);
+    new->URL = strdup(url);
+    new->pageWeight = getPageWeight(url);
+    new->countTerms = 1;
+    new->prev = new->next = NULL;
+    return new;
 }
 
 // Makes list of URLs if they contain search term
@@ -36,7 +51,7 @@ void main(int argc, char *argv[]){
 // Places URLs with higher pageWeight closer to start
 URL updateURLList(URL listHead, char *searchTerm){
     // collect list of URLs containing the search term
-    char *URLArray[BUFSIZ]
+    char *URLArray[BUFSIZ];
     int nURLs = sTermURLs(searchTerm, URLArray);
 
     URL url = NULL;
@@ -44,15 +59,15 @@ URL updateURLList(URL listHead, char *searchTerm){
     int i = 0;
     
     // insert the first url into the list
-    if (listHead == NULL && nURLS > 0) {
-        url = newURLNode(URLArray[0]);
+    if (listHead == NULL && nURLs > 0) {
+        url = newURLNode(URLArray[i]);
         listHead = url;
         i++;
     }
     
     // make changes to the URLList according to the URLs containing the search term
     while(i < nURLs){
-        if((url = URLInList(listHead, URLArray[i])) != NULL){   // Moves existing URL to front of list
+        if((url = URLInList(listHead, URLArray[i])) != NULL){ // updates existing node position
             url->countTerms++;
             listHead = sortList(listHead, url); //position url on countTerms and pageweight
         }else{    // Adds new URL to list
@@ -65,15 +80,13 @@ URL updateURLList(URL listHead, char *searchTerm){
 }
 
 // Returns array of URLs matching search term
-int *sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
-    char *searchTerm = "mars";
+int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
     FILE *invertedIndex = fopen("invertedIndex.txt", "r");
     char fileLine[BUFSIZ], *searchTermLine;
     
     // Loops through entire file and finds search term
     while(fgets(fileLine, BUFSIZ, invertedIndex) != NULL){
         if(strstr(fileLine, searchTerm) != NULL){
-            //TODO check if need to use strsep instead
             searchTermLine = strdup(fileLine);
             strsep(&searchTermLine, " ");    // Removes search term leaving url list
             strsep(&searchTermLine, " ");    // Skip the second space
@@ -90,12 +103,19 @@ int *sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
         urlToken = strsep(&searchTermLine, " ");
         i++;
     }
+    // extract the last url //FIXME can make more efficient?
+    if (urlToken != NULL) {
+        urlToken = strsep(&urlToken, "\n"); // Strip the trailing newline
+        urlArray[i] = malloc(strlen(urlToken) + 1);
+        strcpy(urlArray[i], urlToken);
+        i++;
+    }
     
     fclose(invertedIndex);
     return i;
 }
 
-// Returns TRUE if url is in list
+// Returns node if url is in list
 URL URLInList(URL list, char *u){
     URL curr = list;
     while(curr != NULL){
@@ -110,7 +130,12 @@ URL URLInList(URL list, char *u){
 //FIXME make this more efficient
 // Insert a URL into the URLList
 URL insertURL(URL listHead, URL url) {
+    printf("Inserting: %s\n", url->URL);
     URL curr = listHead;
+    
+    if (listHead == NULL) {
+        return url;
+    }
     
     // get to the nodes with the same countTerms as url
     while (curr->next != NULL && curr->countTerms > url->countTerms) {
@@ -125,24 +150,34 @@ URL insertURL(URL listHead, URL url) {
             curr = curr->next;
         }
         //FIXME the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
+        //FIXME MAKE IT MORE EFFICIENT LUCAS PLEASE AH
         if (curr->next == NULL){
             if (curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight){ // append url
                 curr->next = url;
                 url->prev = curr;
             }else{ // url goes before curr
+                if (curr->prev != NULL) {
+                    curr->prev->next = url;
+                }
                 url->prev = curr->prev;
                 curr->prev = url;
                 url->next = curr;
-            }
+                }
         }else{ // not at the end
             // put url before curr
+            if (curr->prev != NULL) {
+                curr->prev->next = url;
+            }
             url->prev = curr->prev;
             curr->prev = url;
             url->next = curr;
         }
     }
-
-    return listHead;
+    
+    if (url->prev == NULL)
+        return url;
+    else
+        return listHead;
 }
 
 // Deletes old url and inserts new url into correct position
@@ -153,11 +188,49 @@ URL sortList(URL listHead, URL url) {
     return listHead;
 }
 
+// delete a url from the URLList
 URL deleteURL(URL listHead, URL url){
-    url->prev = url->next;
-    url->next = url->prev;
-    free(url->URL);
-    free(url);
-    
+    if (listHead == url) {
+        url->next = NULL;
+        return url->next;
+    }
+    else {
+        // Change next only if node to be deleted is NOT the last node 
+        if(url->next != NULL) 
+          url->next->prev = url->prev; 
+      
+        // Change prev only if node to be deleted is NOT the first node 
+        if(url->prev != NULL) 
+            url->prev->next = url->next;   
+        url->prev = url->next = NULL;
+    }
     return listHead;
 }
+
+// get the pageweight of a url
+double getPageWeight(char *url) {
+    double pageWeight;
+    FILE *file = fopen("pagerankList.txt", "r");
+    char fileLine[BUFSIZ];
+    
+    // find the line regarding the url in the file
+    while (fgets(fileLine, BUFSIZ, file) != NULL) {
+        if (strstr(fileLine, url) != NULL)
+            break;
+    }
+    fclose(file);
+    
+    // scan in the pageweight
+    sscanf(fileLine, "%*s, %*d, %lf", &pageWeight);
+    
+    return pageWeight;
+}
+
+void showURLList(URL listHead) {
+    URL curr = listHead;
+    while(curr != NULL) {
+        printf("%s\n", curr->URL);
+        curr = curr->next;
+    }
+}
+

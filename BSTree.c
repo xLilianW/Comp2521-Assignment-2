@@ -29,7 +29,7 @@ BSTLink newBSTNode(char *word)
 
 // make a new BSTPage
 static
-BSTPage newBSTBSTPage(char *url) {
+BSTPage newBSTPage(char *url) {
     BSTPage new = malloc(sizeof(BSTListNode));
     assert(new != NULL);
     new->URL = strdup(url);
@@ -111,18 +111,18 @@ BSTree BSTreeInsert(BSTree t, char *word)
 
 // add a BSTPage to a words BSTPageLi
 void BSTAddBSTPage(char *url, BSTLink node) {
-    BSTPage newBSTPage = newBSTBSTPage(url);
+    BSTPage newPage = newBSTPage(url);
     BSTPage curr = node->BSTPageList;
     if (curr == NULL) {
-        node->BSTPageList = newBSTPage;
+        node->BSTPageList = newPage;
     }
     else {
-        if (strcmp(curr->URL, url) == 0) return;
         while (curr->next != NULL) {
             if (strcmp(curr->URL, url) == 0) return;
             curr = curr->next;
         }
-        curr->next = newBSTPage;
+        if (strcmp(curr->URL, url) == 0) return;
+        curr->next = newPage;
     }
 }
 
