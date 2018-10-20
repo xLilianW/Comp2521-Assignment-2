@@ -74,8 +74,11 @@ URL updateURLList(URL listHead, char *searchTerm){
             url = newURLNode(URLArray[i]);
             listHead = insertURL(listHead, url); //position url on countTerms and pageweight
         }
+        printf("%s\n", URLArray[i]);
+        showURLList(listHead);
         i++;
     }
+
     return listHead;
 }
 
@@ -127,7 +130,6 @@ URL URLInList(URL list, char *u){
     return NULL;
 }
 
-//FIXME make this more efficient
 // Insert a URL into the URLList
 URL insertURL(URL listHead, URL url) {
     printf("Inserting: %s\n", url->URL);
@@ -142,29 +144,20 @@ URL insertURL(URL listHead, URL url) {
         curr = curr->next;
     }
     
-    if (curr->next == NULL){ // all nodes have a higher countTerms than url
-        curr->next = url; // append url at the end
-        url->prev = curr;
-    }else{ // insert based on pageweight
+    //if (curr->next == NULL){ // all nodes have a higher countTerms than url
+    //    if (
+    //    curr->next = url; // append url at the end
+    //    url->prev = curr;
+    //}else{ // insert based on pageweight
         while (curr->next != NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight) {
             curr = curr->next;
         }
         //FIXME the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
-        //FIXME MAKE IT MORE EFFICIENT LUCAS PLEASE AH
-        if (curr->next == NULL){
-            if (curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight){ // append url
-                curr->next = url;
-                url->prev = curr;
-            }else{ // url goes before curr
-                if (curr->prev != NULL) {
-                    curr->prev->next = url;
-                }
-                url->prev = curr->prev;
-                curr->prev = url;
-                url->next = curr;
-                }
-        }else{ // not at the end
-            // put url before curr
+        //FIXME Check if these are all the cases
+        if (curr->next == NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight){ // append url
+            curr->next = url;
+            url->prev = curr;
+        }else{ // put url before curr
             if (curr->prev != NULL) {
                 curr->prev->next = url;
             }
@@ -172,7 +165,7 @@ URL insertURL(URL listHead, URL url) {
             curr->prev = url;
             url->next = curr;
         }
-    }
+    //}
     
     if (url->prev == NULL)
         return url;
@@ -221,15 +214,16 @@ double getPageWeight(char *url) {
     fclose(file);
     
     // scan in the pageweight
-    sscanf(fileLine, "%*s, %*d, %lf", &pageWeight);
+    sscanf(fileLine, "%*s %*d, %lf\n", &pageWeight);
     
     return pageWeight;
 }
 
 void showURLList(URL listHead) {
+    printf("\n========\n");
     URL curr = listHead;
     while(curr != NULL) {
-        printf("%s\n", curr->URL);
+        printf("%s %d %lf\n", curr->URL, curr->countTerms, curr->pageWeight);
         curr = curr->next;
     }
 }

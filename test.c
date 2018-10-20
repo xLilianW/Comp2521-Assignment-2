@@ -9,7 +9,12 @@
 #define FALSE   0
 
 int main() {
-    Graph g = collectOutgoingURLs();
-    showGraph(g);
+  char *s = "url32, 3, 8.649292\n" ;
+  double d ;
+  char str[50];
+   int num = 0;
+  sscanf( s, "%s %d, %lf\n", str, &num, &d ) ;
+
+  printf("%s %d, %lf\n", str, num, d ); 
 }
 
