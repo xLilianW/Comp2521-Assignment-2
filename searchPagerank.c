@@ -28,6 +28,7 @@ int main(int argc, char *argv[]){
     // Make list of URLs based on number of search terms in each URL
     int i;
     for(i = 1; i < argc; i++){
+        printf("%d %s\n", i, argv[i]);
         URLList = updateURLList(URLList, argv[i]);
     }
     
@@ -74,7 +75,6 @@ URL updateURLList(URL listHead, char *searchTerm){
             url = newURLNode(URLArray[i]);
             listHead = insertURL(listHead, url); //position url on countTerms and pageweight
         }
-        printf("%s\n", URLArray[i]);
         showURLList(listHead);
         i++;
     }
@@ -84,16 +84,17 @@ URL updateURLList(URL listHead, char *searchTerm){
 
 // Returns array of URLs matching search term
 int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
-    FILE *invertedIndex = fopen("invertedIndex.txt", "r");
-    char fileLine[BUFSIZ], *searchTermLine;
-    
     // append " " to the search term so the exact word is found in the file
-    //searchTerm = realloc(searchTerm, strlen(searchTerm) + 2); //FIXME necessary?
-    strcat(searchTerm, " ");
+    char *searchTerm_copy = strdup(searchTerm);
+    searchTerm_copy = realloc(searchTerm_copy, strlen(searchTerm) + 2);
+    strcat(searchTerm_copy, " ");
+    
+    FILE *invertedIndex = fopen("invertedIndex.txt", "r");
+    char fileLine[BUFSIZ], *searchTermLine = NULL;
     
     // Loops through entire file and finds search term
     while(fgets(fileLine, BUFSIZ, invertedIndex) != NULL){
-        if(strstr(fileLine, searchTerm) != NULL){
+        if(strstr(fileLine, searchTerm_copy) != NULL){
             searchTermLine = strdup(fileLine);
             strsep(&searchTermLine, " ");    // Removes search term leaving url list
             strsep(&searchTermLine, " ");    // Skip the second space
@@ -101,6 +102,10 @@ int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
         }
     }
     
+    // Search term doesn't appear in collection
+    if (searchTermLine == NULL)
+        return 0;
+        
     // Extract each URL matching search term and place into array
     char *urlToken = strsep(&searchTermLine, " ");
     int i = 0;
@@ -137,29 +142,29 @@ URL URLInList(URL list, char *u){
 // Insert a URL into the URLList
 URL insertURL(URL listHead, URL url) {
     printf("Inserting: %s\n", url->URL);
-    URL curr = listHead;
+    URL curr = listHead, prev = NULL;
     
     // empty url list
     if (listHead == NULL) {
-        printf("HELLO");
         return url;
     }
     
     // get to the nodes with the same countTerms as url
-    while (curr->next != NULL && curr->countTerms > url->countTerms) {
+    while (curr != NULL && curr->countTerms > url->countTerms) {
+        prev = curr;
         curr = curr->next;
     }
     // get to the right pageWeight position
-    while (curr->next != NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight) {
+    while (curr != NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight) {
+        prev = curr;
         curr = curr->next;
     }
     
     //FIXME the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
     //FIXME Check if these are all the cases
-    if (curr->next == NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight){ // append url
-        printf("HELLO 2");
-        curr->next = url;
-        url->prev = curr;
+    if (curr == NULL) {
+        prev->next = url;
+        url->prev = prev;
     }else{ // put url before curr
         if (curr->prev != NULL) {
             curr->prev->next = url;
@@ -167,7 +172,6 @@ URL insertURL(URL listHead, URL url) {
         url->prev = curr->prev;
         curr->prev = url;
         url->next = curr;
-        printf("HELLO 3");
     }
     
     if (url->prev == NULL)
