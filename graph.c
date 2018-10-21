@@ -22,12 +22,14 @@ typedef struct GraphRep {
 	Outgoing  *connections; // list representation of outgoing links
 } GraphRep;
 
+// Returns index for page of URL
 int findURLIndex (Graph g, Outgoing node) {
     int i = 0;
     while (g->URLs[i] != NULL) {
         if (strcmp(g->URLs[i]->URL, node->URL) == 0){
             return i;
         }
+        i++;
     }
     return -1;
 }
@@ -53,7 +55,6 @@ Graph newGraph(int nV, char **urls)
 	for (i=0; i < nV; i++) {
 	    new->connections[i] = NULL;
 	}
-
 
 	return new;
 }
@@ -98,7 +99,10 @@ int numNodes(Graph g) {
 // Returns page with index i
 GraphPage getPage(Graph g, int i){
     //TODO check if returns null when page doesnt exist
-    return g->connections[i];
+    if(i < numNodes(g)){
+        return g->URLs[i];
+    }
+    return NULL;
 }
 
 // Changes page weight to w

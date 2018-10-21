@@ -4,7 +4,7 @@
 #include "graph.h"
 
 void pageRankW(double, double, int);
-double calcPageRank(Graph, GraphPage, int);
+double calcPageRank(Graph, GraphPage, double);
 double inLinkPopularity(Graph, GraphPage, GraphPage);
 int countInLinks(Graph, GraphPage);
 int isInLink(Graph, GraphPage, GraphPage);
