@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include "graph.h"
 #include "readData.h"
 
 void pageRankW(int, double, int);
