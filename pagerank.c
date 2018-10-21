@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "graph.h"
+#include "readData.h"
 
-void pageRankW(Graph, int, double, int);
+void pageRankW(int, double, int);
 double calcPageRank(Graph, GraphPage, int);
 double inLinkPopularity(Graph, GraphPage, GraphPage);
 int countInLinks(Graph, GraphPage);
@@ -15,7 +15,8 @@ void orderWGraphPages(Graph);
 int findURLIndex(Graph, GraphPage);
 
 // Returns list of urls with page ranks (doesnt return anything)
-void pageRankW(Graph g, int d, double diffPR, int maxIterations){
+void pageRankW(int d, double diffPR, int maxIterations){
+    Graph g = collectOutgoingURLs();
     
     for(int i = 0; i < numNodes(g); i++){
         setPageWeight(getPage(g, i), 1/numNodes(g));    // Initialise page weights
@@ -29,6 +30,8 @@ void pageRankW(Graph g, int d, double diffPR, int maxIterations){
         diff = fabs(getPageWeight(getPage(g, i)) - prevWeight);
         i++;
     }
+    
+    orderWGraphPages(g);
 }
 double calcPageRank(Graph g, GraphPage p, int d){    //TODO
     double sumOutGoing = 0.0;
@@ -103,7 +106,7 @@ int countOutLinks(Graph g, GraphPage url){    //TODO   (check if this counts its
 }
 
 // Orders urls by page rank
-void orderWeightedPages(Graph g){   //TODO (very inefficient)
+void orderWGraphPages(Graph g){   //TODO (very inefficient)
     FILE *pagerankList = fopen("pagerankList.txt", "w");
     double largest = 0.0;
     int largestIndex = 0;
