@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "pagerank.c"
+#include "pagerank.h"
 
 #define TRUE    1
 #define FALSE   0

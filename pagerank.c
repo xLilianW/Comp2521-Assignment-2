@@ -2,24 +2,19 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include "pagerank.h"
 #include "readData.h"
 
-void pageRankW(int, double, int);
-double calcPageRank(Graph, GraphPage, int);
-double inLinkPopularity(Graph, GraphPage, GraphPage);
-int countInLinks(Graph, GraphPage);
-int isInLink(Graph, GraphPage, GraphPage);
-double outLinkPopularity(Graph, GraphPage, GraphPage);
-int countOutLinks(Graph, GraphPage);
-void orderWGraphPages(Graph);
-int findURLIndex(Graph, GraphPage);
 
 // Returns list of urls with page ranks (doesnt return anything)
-void pageRankW(int d, double diffPR, int maxIterations){
+void pageRankW(double d, double diffPR, int maxIterations){
     Graph g = collectOutgoingURLs();
+    showGraph(g);
     
     for(int i = 0; i < numNodes(g); i++){
-        setPageWeight(getPage(g, i), 1/numNodes(g));    // Initialise page weights
+        printf("working:i = %d\n", i);
+        setPageWeight(getPage(g, i), 1.0/numNodes(g));    // Initialise page weights
+        printf("1/numNodes(g) %d %lf\n", numNodes(g), 1.0/numNodes(g));
     }
     
     int i = 0;
