@@ -5,11 +5,9 @@
 #include "pagerank.h"
 #include "readData.h"
 
-
-// Returns list of urls with page ranks (doesnt return anything)
+// Creates file containing list of urls ordered by page ranks
 void pageRankW(double d, double diffPR, int maxIterations){
     Graph g = collectOutgoingURLs();
-    //showGraph(g);
     
     for(int i = 0; i < numNodes(g); i++){
         setPageWeight(getPage(g, i), 1.0/numNodes(g));    // Initialise page weights
@@ -18,21 +16,19 @@ void pageRankW(double d, double diffPR, int maxIterations){
     int i = 0;
     double diff = diffPR;
     while(i < maxIterations && diff >= diffPR){
-        printf("i %d diff %lf \n", i, diff);
         int j;
         for(j = 0; j < numNodes(g); j++){
             double prevWeight = getPageWeight(getPage(g, j));
-            //printf("prevWeight %lf calcPageRank %lf\n", prevWeight, calcPageRank(g, getPage(g,j), d));
             setPageWeight(getPage(g, j), calcPageRank(g, getPage(g, j), d));
             diff = fabs(getPageWeight(getPage(g, j)) - prevWeight);
-            printf("diff %lf\n", diff);
         }
         i++;
     }
-    printf("maxIterations %d i %d diff %lf \n", maxIterations, i, diff);
     orderWGraphPages(g);
 }
-double calcPageRank(Graph g, GraphPage p, double d){    //TODO
+
+// Calculates page rank
+double calcPageRank(Graph g, GraphPage p, double d){
     double sumOutGoing = 0.0;
     
     // Search through all pages with outgoing links to p
@@ -43,11 +39,10 @@ double calcPageRank(Graph g, GraphPage p, double d){    //TODO
         }
     }
     double pageRank = (1-d)/(numNodes(g)) + (d*sumOutGoing);
-    printf("d %lf sumOutGoing %lf pageRank %lf\n", d, sumOutGoing, pageRank);
     return pageRank;
 }
 
-//do we need separate ones for inLink and outLink?
+// Calculates inlink popularity
 double inLinkPopularity(Graph g, GraphPage v, GraphPage u){
     double sumRefLinks = 0.0;
     int curr = findURLIndex(g, v);
@@ -55,10 +50,11 @@ double inLinkPopularity(Graph g, GraphPage v, GraphPage u){
         sumRefLinks += countInLinks(g, getPage(g, curr));
         curr++;
     }
-    //printf("inLinkPopularity %lf\n", countInLinks(g, u)/sumRefLinks);
     return countInLinks(g, u)/sumRefLinks;
 }
-int countInLinks(Graph g, GraphPage url){    //check if this counts itself as inlink
+
+// Returns number of inlinks a url has
+int countInLinks(Graph g, GraphPage url){
     int numInLinks = 0;
     int i = 0;
     for (i = 0; i < numNodes(g); i++){
@@ -80,6 +76,7 @@ int isInLink(Graph g, GraphPage u, GraphPage v){
     return 0;
 } 
 
+// Calculates outlink popularity
 double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
     double sumRefLinks = 0.0;
     int curr = findURLIndex(g, v);
@@ -92,12 +89,11 @@ double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
         }
         curr++;
     }
-    //printf("outLinkPopularity %lf\n", countOutLinks(g, u)/sumRefLinks);
     return countOutLinks(g, u)/sumRefLinks;
 }
 
 // Counts number of outgoing links a given url has
-int countOutLinks(Graph g, GraphPage url){    //TODO   (check if this counts itself as a link)
+int countOutLinks(Graph g, GraphPage url){
     int numOutLinks = 0;
     int curr = findURLIndex(g, url);
     while(getPage(g, curr) != NULL){
@@ -108,7 +104,7 @@ int countOutLinks(Graph g, GraphPage url){    //TODO   (check if this counts its
 }
 
 // Orders urls by page rank
-void orderWGraphPages(Graph g){   //TODO (very inefficient)
+void orderWGraphPages(Graph g){
     FILE *pagerankList = fopen("pagerankList.txt", "w");
     
     double largestWeight = 0.0;
@@ -117,6 +113,8 @@ void orderWGraphPages(Graph g){   //TODO (very inefficient)
     int i;
     for(i = 0; i < numNodes(g); i++){
         int j;
+        largestWeight = 0.0;
+        largestPage = 0;
         for(j = 0; j < numNodes(g); j++){
             if(getPageWeight(getPage(g, j)) >= largestWeight){
                 largestWeight = getPageWeight(getPage(g, j));
@@ -125,27 +123,6 @@ void orderWGraphPages(Graph g){   //TODO (very inefficient)
         }
         fprintf(pagerankList, "%s, %d, %.7f\n", getURL(getPage(g, largestPage)), countOutLinks(g, getPage(g, largestPage)), getPageWeight(getPage(g, largestPage)));
         setPageWeight(getPage(g, largestPage), -1);
-    }
-    fclose(pagerankList);
-}
-
-// Orders urls by page rank
-void orderWGraphPages(Graph g){   //TODO (very inefficient)
-    FILE *pagerankList = fopen("pagerankList.txt", "w");
-    double largest = 0.0;
-    int largestIndex = 0;
-    int i = 0;
-    for(i = 0; i < numNodes(g); i++){
-        int j = 0;
-        for(j = 0; j < numNodes(g); j++){
-            if(getPageWeight(getPage(g, i)) >= largest){
-                largest = getPageWeight(getPage(g, i));
-                largestIndex = j;
-            }
-        }
-        int largestPage = largestIndex;
-        //TODO getURL cant just be for largest
-        fprintf(pagerankList, "%s, %d, %.7f\n", getURL(getPage(g, largestPage)), countOutLinks(g, getPage(g, largestPage)), getPageWeight(getPage(g, largestPage)));
     }
     fclose(pagerankList);
 }
