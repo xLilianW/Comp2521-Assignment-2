@@ -84,6 +84,8 @@ int collectURLs(char *urls[BUFSIZ]) {
         strcpy(urls[i], url);
         i++;
     }
+    fclose(collection);
+    
     return i;
 }
 
