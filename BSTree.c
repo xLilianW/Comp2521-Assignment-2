@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include "BSTree.h"
+#include "c99.h"
 
 typedef struct BSTListNode {
     char *URL;

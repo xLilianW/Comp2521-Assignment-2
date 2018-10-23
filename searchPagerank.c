@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include "c99.h"
 
 typedef struct listNode *URL;
 
@@ -56,7 +57,6 @@ URL updateURLList(URL listHead, char *searchTerm){
     int nURLs = sTermURLs(searchTerm, URLArray);
 
     URL url = NULL;
-    URL curr = listHead;    
     int i = 0;
     
     // insert the first url into the list

@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 #include "graph.h"
+#include "c99.h"
 
 #define TRUE    1
 #define FALSE   0
