@@ -4,13 +4,16 @@
 #include <string.h>
 #include "c99.h"
 
+#define TRUE 1
+#define FALSE 0
+
 typedef struct listNode *URL;
 
 struct listNode {
     char *URL;
     double pageWeight;
     int countTerms;
-    URL prev, next;
+    URL next;
 } listNode;
 
 URL newURLNode(char *url);
@@ -44,7 +47,7 @@ URL newURLNode(char *url) {
     new->URL = strdup(url);
     new->pageWeight = getPageWeight(url);
     new->countTerms = 1;
-    new->prev = new->next = NULL;
+    new->next = NULL;
     return new;
 }
 
@@ -84,26 +87,23 @@ URL updateURLList(URL listHead, char *searchTerm){
 
 // Returns array of URLs matching search term
 int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
-    // append " " to the search term so the exact word is found in the file
-    char *searchTerm_copy = strdup(searchTerm);
-    searchTerm_copy = realloc(searchTerm_copy, strlen(searchTerm) + 2);
-    strcat(searchTerm_copy, " ");
-    
     FILE *invertedIndex = fopen("invertedIndex.txt", "r");
-    char fileLine[BUFSIZ], *searchTermLine = NULL;
+    char fileLine[BUFSIZ], *searchTermLine, *term;
+    int found = FALSE;
     
     // Loops through entire file and finds search term
-    while(fgets(fileLine, BUFSIZ, invertedIndex) != NULL){
-        if(strstr(fileLine, searchTerm_copy) != NULL){
-            searchTermLine = strdup(fileLine);
-            strsep(&searchTermLine, " ");    // Removes search term leaving url list
+    while (fgets(fileLine, BUFSIZ, invertedIndex) != NULL){
+        searchTermLine = strdup(fileLine);
+        term = strsep(&searchTermLine, " ");
+        if (strcmp(term, searchTerm) == 0) {    // check if this is the line containing urls for the search term
             strsep(&searchTermLine, " ");    // Skip the second space
+            found = TRUE;
             break;
         }
     }
     
     // Search term doesn't appear in collection
-    if (searchTermLine == NULL)
+    if (found == FALSE)
         return 0;
         
     // Extract each URL matching search term and place into array
@@ -143,9 +143,10 @@ URL URLInList(URL list, char *u){
 URL insertURL(URL listHead, URL url) {
     printf("Inserting: %s\n", url->URL);
     URL curr = listHead, prev = NULL;
-    
-    // empty url list
-    if (listHead == NULL) {
+    // url is new listHead
+    if (listHead == NULL || url->countTerms > listHead->countTerms ||
+        (url->countTerms == listHead->countTerms && url->pageWeight > listHead->pageWeight)) {
+        url->next = listHead;
         return url;
     }
     
@@ -164,20 +165,12 @@ URL insertURL(URL listHead, URL url) {
     //FIXME Check if these are all the cases
     if (curr == NULL) {
         prev->next = url;
-        url->prev = prev;
     }else{ // put url before curr
-        if (curr->prev != NULL) {
-            curr->prev->next = url;
-        }
-        url->prev = curr->prev;
-        curr->prev = url;
+        prev->next = url;
         url->next = curr;
     }
     
-    if (url->prev == NULL)
-        return url;
-    else
-        return listHead;
+    return listHead;
 }
 
 // Deletes old url and inserts new url into correct position
@@ -191,18 +184,14 @@ URL sortList(URL listHead, URL url) {
 // delete a url from the URLList
 URL deleteURL(URL listHead, URL url){
     if (listHead == url) {
-        if (url->next != NULL) 
-            url->next->prev = NULL;
         return url->next;
     }
     else {
-        // Change next only if node to be deleted is NOT the last node 
-        if(url->next != NULL) 
-          url->next->prev = url->prev; 
-      
-        // Change prev only if node to be deleted is NOT the first node 
-        if(url->prev != NULL) 
-            url->prev->next = url->next;   
+        URL curr = listHead;
+        while (curr->next != url) {
+            curr = curr->next;
+        }  
+        curr->next = url->next;
     }
     return listHead;
 }

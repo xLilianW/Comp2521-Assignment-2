@@ -6,13 +6,16 @@
 #include <string.h>
 #include "c99.h"
 
+#define TRUE 1
+#define FALSE 0
+
 typedef struct listNode *URL;
 
 struct listNode {
     char *URL;
     double tfidf;
     int countTerms;
-    URL prev, next;
+    URL next;
 } listNode;
 
 URL newURLNode(char *url, double tfidf);
@@ -51,24 +54,27 @@ URL newURLNode(char *url, double tfidf) {
     new->URL = strdup(url);
     new->tfidf = tfidf;
     new->countTerms = 1;
-    new->prev = new->next = NULL;
+    new->next = NULL;
     return new;
 }
 
 // Makes list of URLs if they contain search term
 // Places URLs with more search terms closer to start
-// Places URLs with higher pageWeight closer to start
+// Places URLs with higher tfidf closer to start
 URL updateURLList(URL listHead, char *searchTerm, int nDocs){
     // collect list of URLs containing the search term
     char *URLArray[BUFSIZ];
     int nURLs = sTermURLs(searchTerm, URLArray);
+    
+    if (nURLs == 0) return listHead;
+    
     double tfidf, idf = inverseDocumentFrequency(nURLs, nDocs);
 
     URL url = NULL;
     int i = 0;
     
     // insert the first url into the list
-    if (listHead == NULL && nURLs > 0) {
+    if (listHead == NULL) {
         tfidf = termFrequency(searchTerm, URLArray[i]) * idf;
         url = newURLNode(URLArray[i], tfidf);
         listHead = url;
@@ -81,10 +87,10 @@ URL updateURLList(URL listHead, char *searchTerm, int nDocs){
         if((url = URLInList(listHead, URLArray[i])) != NULL){ // updates existing node position
             url->countTerms++;
             url->tfidf += tfidf;
-            listHead = sortList(listHead, url); //position url on countTerms and pageweight
+            listHead = sortList(listHead, url); //position url on countTerms and tfidf
         }else{    // Adds new URL to list
             url = newURLNode(URLArray[i], tfidf);
-            listHead = insertURL(listHead, url); //position url on countTerms and pageweight
+            listHead = insertURL(listHead, url); //position url on countTerms and tfidf
         }
         showURLList(listHead);
         i++;
@@ -94,27 +100,24 @@ URL updateURLList(URL listHead, char *searchTerm, int nDocs){
 }
 
 // Returns array of URLs matching search term
-int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
-    // append " " to the search term so the exact word is found in the file
-    char *searchTerm_copy = strdup(searchTerm);
-    searchTerm_copy = realloc(searchTerm_copy, strlen(searchTerm) + 2);
-    strcat(searchTerm_copy, " ");
-    
+int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]) {
     FILE *invertedIndex = fopen("invertedIndex.txt", "r");
-    char fileLine[BUFSIZ], *searchTermLine = NULL;
+    char fileLine[BUFSIZ], *searchTermLine, *term;
+    int found = FALSE;
     
     // Loops through entire file and finds search term
-    while(fgets(fileLine, BUFSIZ, invertedIndex) != NULL){
-        if(strstr(fileLine, searchTerm_copy) != NULL){
-            searchTermLine = strdup(fileLine);
-            strsep(&searchTermLine, " ");    // Removes search term leaving url list
+    while (fgets(fileLine, BUFSIZ, invertedIndex) != NULL){
+        searchTermLine = strdup(fileLine);
+        term = strsep(&searchTermLine, " ");
+        if (strcmp(term, searchTerm) == 0) {    // check if this is the line containing urls for the search term
             strsep(&searchTermLine, " ");    // Skip the second space
+            found = TRUE;
             break;
         }
     }
     
     // Search term doesn't appear in collection
-    if (searchTermLine == NULL)
+    if (found == FALSE)
         return 0;
         
     // Extract each URL matching search term and place into array
@@ -155,8 +158,10 @@ URL insertURL(URL listHead, URL url) {
     printf("Inserting: %s\n", url->URL);
     URL curr = listHead, prev = NULL;
     
-    // empty url list
-    if (listHead == NULL) {
+    // url is new listHead
+    if (listHead == NULL || url->countTerms > listHead->countTerms ||
+        (url->countTerms == listHead->countTerms && url->tfidf > listHead->tfidf)) {
+        url->next = listHead;
         return url;
     }
     
@@ -165,7 +170,7 @@ URL insertURL(URL listHead, URL url) {
         prev = curr;
         curr = curr->next;
     }
-    // get to the right pageWeight position
+    // get to the right tfidf position
     while (curr != NULL && curr->countTerms == url->countTerms && curr->tfidf > url->tfidf) {
         prev = curr;
         curr = curr->next;
@@ -175,20 +180,12 @@ URL insertURL(URL listHead, URL url) {
     //FIXME Check if these are all the cases
     if (curr == NULL) {
         prev->next = url;
-        url->prev = prev;
     }else{ // put url before curr
-        if (curr->prev != NULL) {
-            curr->prev->next = url;
-        }
-        url->prev = curr->prev;
-        curr->prev = url;
+        prev->next = url;
         url->next = curr;
     }
     
-    if (url->prev == NULL)
-        return url;
-    else
-        return listHead;
+    return listHead;
 }
 
 // Deletes old url and inserts new url into correct position
@@ -202,18 +199,14 @@ URL sortList(URL listHead, URL url) {
 // delete a url from the URLList
 URL deleteURL(URL listHead, URL url){
     if (listHead == url) {
-        if (url->next != NULL) 
-            url->next->prev = NULL;
         return url->next;
     }
     else {
-        // Change next only if node to be deleted is NOT the last node 
-        if(url->next != NULL) 
-          url->next->prev = url->prev; 
-      
-        // Change prev only if node to be deleted is NOT the first node 
-        if(url->prev != NULL) 
-            url->prev->next = url->next;   
+        URL curr = listHead;
+        while (curr->next != url) {
+            curr = curr->next;
+        }  
+        curr->next = url->next;
     }
     return listHead;
 }
@@ -224,6 +217,7 @@ double termFrequency(char *term, char *url) {
     char *fileName = strdup(url);
     fileName = realloc(fileName, strlen(url) + strlen(".txt") + 1);
     strcat(fileName, ".txt");  
+    printf("%s\n", fileName);
     FILE *page = fopen(fileName, "r");
 
     double count = 0.0, words, termFreq;
