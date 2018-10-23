@@ -5,31 +5,56 @@
 
 int main(int argc, char *argv[]){
     ListNode *tLists[argc-1] = getTLists(argc-1, argv);
+    int *cList = getCList(tLists);
+    int *pList = getCList(tLists);
     
     double totalDist = 0.0;
-    //loop through lists calculating dist and sum them
-    while(){
-        totalDist += calculateSFDistance(tList, cList, p, findCardinality(tLists));
+    double minDist = -1.0;
+    int *bestPList;
+    
+    int i = 0;
+    while(i < findCard(cList)){    // Loops through each alternate set of p
+        pList = generateP(pList, i);
+        int j = 0;
+        while(j < findCard(cList)){    // Loops through each element in C list
+            int k;
+            for(k = 0; k < argc-1; k++){    // Loops through each list
+                totalDist += calcSFDist(tLists[k], cList[j], pList[j], findCard(cList));
+                if(totalDist < minDist || minDist == -1.0){
+                    minDist = totalDist;
+                    bestPList = pList;
+                }
+            }
+            j++;
+        }
+        i++;
     }
 }
 
-double calculateSFDistance(list t, list c, int position, int k){
-    int cardC = findCardinality(c);
-    int cardT = findCardinality(t);
+double calcSFDist(list t, int c, int p, int n){
+    int cardT = findCard(t);
     int cPosition = positionInList(c, t);
     
-    return fabs(cPosition/cardT - position/cardC);    //TODO typecast to double
+    return fabs(cPosition/cardT - p/n);    //TODO typecast to double
 }
 
-int findCardinality(list){
-    return cardinality;
+int findCard(list L){
+    int card = 0;
+    while(L[i] != NULL){
+        card++;
+    }
+    return card;
 }
 
-int positionInList(int c, list){
-    
-    return position;
+int positionInList(int c, list L){
+    int position;
+    for(position = 0; position < findCard(L); position++){
+        if(L[position] == c){
+            return position;
+        }
+    }
+    return -1;
 }
-
 
 // get list of ordered urls in each search list
 listNode **getTLists(int nFiles, char *files[]){
