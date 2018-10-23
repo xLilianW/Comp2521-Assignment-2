@@ -2,10 +2,6 @@
 #include <stdio.h>
 #include "c99.h"
 
-typedef struct listNode {
-    char *URL;
-    listNode *next;
-} listNode;
 
 int main(int argc, char *argv[]){
     ListNode *tLists[argc-1] = getTLists(argc-1, argv);
@@ -15,14 +11,6 @@ int main(int argc, char *argv[]){
     while(){
         totalDist += calculateSFDistance(tList, cList, p, findCardinality(tLists));
     }
-}
-
-listNode *newNode(char *url) {
-    listNode new = malloc(sizeof(listNode));
-    assert(new != NULL);
-    new->URL = strdup(url);
-    new->next = NULL;
-    return new;
 }
 
 double calculateSFDistance(list t, list c, int position, int k){
@@ -42,6 +30,8 @@ int positionInList(int c, list){
     return position;
 }
 
+
+// get list of ordered urls in each search list
 listNode **getTLists(int nFiles, char *files[]){
     listNode *tLists[nFiles] = malloc(nFiles*sizeof(listNode));
     listNode *curr = NULL;

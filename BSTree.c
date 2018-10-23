@@ -114,17 +114,21 @@ BSTree BSTreeInsert(BSTree t, char *word)
 void BSTAddBSTPage(char *url, BSTLink node) {
     BSTPage newPage = newBSTPage(url);
     BSTPage curr = node->BSTPageList;
-    if (curr == NULL) {
+    // new listhead
+    if (curr == NULL || strcmp(newPage->URL, curr->URL) < 0) { 
+        newPage->next = curr; 
         node->BSTPageList = newPage;
-    }
-    else {
-        while (curr->next != NULL) {
-            if (strcmp(curr->URL, url) == 0) return;
+        return;
+    } 
+    else { 
+        // find the newpage position
+        while (curr->next != NULL && strcmp(curr->URL, newPage->URL) < 0) {
             curr = curr->next;
-        }
-        if (strcmp(curr->URL, url) == 0) return;
-        curr->next = newPage;
-    }
+        } 
+        if (strcmp(curr->URL, newPage->URL) == 0) return;
+        newPage->next = curr->next; 
+        curr->next = newPage; 
+    } 
 }
 
 // find the node containing a particular word
