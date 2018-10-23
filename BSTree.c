@@ -122,10 +122,12 @@ void BSTAddBSTPage(char *url, BSTLink node) {
     } 
     else { 
         // find the newpage position
-        while (curr->next != NULL && strcmp(curr->URL, newPage->URL) < 0) {
+        if (strcmp(curr->URL, newPage->URL) == 0) return;
+        while (curr->next != NULL && strcmp(curr->next->URL, newPage->URL) < 0) {
             curr = curr->next;
         } 
-        if (strcmp(curr->URL, newPage->URL) == 0) return;
+        if (curr->next != NULL && strcmp(curr->next->URL, newPage->URL) == 0) return;
+
         newPage->next = curr->next; 
         curr->next = newPage; 
     } 
