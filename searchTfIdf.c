@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <assert.h>
 #include <string.h>
+#include "c99.h"
 
 typedef struct listNode *URL;
 
@@ -64,7 +65,6 @@ URL updateURLList(URL listHead, char *searchTerm, int nDocs){
     double tfidf, idf = inverseDocumentFrequency(nURLs, nDocs);
 
     URL url = NULL;
-    URL curr = listHead;    
     int i = 0;
     
     // insert the first url into the list
@@ -227,7 +227,7 @@ double termFrequency(char *term, char *url) {
     FILE *page = fopen(fileName, "r");
 
     double count = 0.0, words, termFreq;
-    fscanf(page, "%*[^\n]%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL); // skip to section 2 // skip to section 2
+    fscanf(page, "%*[^\n]%*[^#]#%*[^#]#%*[^\n]\n"); // skip to section 2 // skip to section 2
 
     char word[BUFSIZ];
     fscanf(page, " %s", word);

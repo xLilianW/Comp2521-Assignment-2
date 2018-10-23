@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "readData.h"
+#include "c99.h"
 
 int collectURLs(char *urls[BUFSIZ]);
 void lowercase(char *word);
@@ -10,7 +11,7 @@ char *removePunctuation(char *word);
 
 Graph collectOutgoingURLs () {    
     char *urls[BUFSIZ];
-    int i, j, nURLs = collectURLs(urls);
+    int i, nURLs = collectURLs(urls);
     
     Graph g = newGraph(nURLs, urls);    // Make empty graph
     for(i = 0; i < numNodes(g); i++){
@@ -19,7 +20,7 @@ Graph collectOutgoingURLs () {
         strcat(fileName, ".txt");   // Open each url file
         FILE *urlFile = fopen(fileName, "r");
         
-        fscanf(urlFile, "%*[^\n]\n", NULL); // skip #start section 1
+        fscanf(urlFile, "%*[^\n]\n"); // skip #start section 1
         
         char outgoingURL[BUFSIZ];
         fscanf(urlFile, " %s", outgoingURL);
@@ -42,15 +43,13 @@ BSTree collectInvertedIndex() {
     BSTree invertedIndex = newBSTree();
     int i, j, nURLs = collectURLs(urls);
     
-    
-    char word[BUFSIZ];
     for (i = 0; i < nURLs; i++) {
         char *fileName = strdup(urls[i]);
         fileName = realloc(fileName, strlen(urls[i]) + strlen(".txt") + 1);
         strcat(fileName, ".txt");   // Open each url file
         FILE *urlFile = fopen(fileName, "r");
         
-        fscanf(urlFile, "%*[^\n]%*[^#]#%*[^#]#%*[^\n]\n", NULL, NULL, NULL, NULL); // skip to section 2 // skip to section 2
+        fscanf(urlFile, "%*[^\n]%*[^#]#%*[^#]#%*[^\n]\n"); // skip to section 2 // skip to section 2
 
         char word[BUFSIZ];
         fscanf(urlFile, " %s", word);
