@@ -5,6 +5,8 @@
 #include "readData.h"
 #include "c99.h"
 
+#define URLSIZE 50
+
 int collectURLs(char *urls[BUFSIZ]);
 void lowercase(char *word);
 char *removePunctuation(char *word);
@@ -22,7 +24,7 @@ Graph collectOutgoingURLs () {
         
         fscanf(urlFile, "%*[^\n]\n"); // skip #start section 1
         
-        char outgoingURL[BUFSIZ];
+        char outgoingURL[URLSIZE];
         fscanf(urlFile, " %s", outgoingURL);
         // Update graph by adding node and outgoing links
         while (strcmp(outgoingURL, "#end") != 0) { 
@@ -73,7 +75,7 @@ BSTree collectInvertedIndex() {
 
 // extract list of urls from collection.txt
 int collectURLs(char *urls[BUFSIZ]) {
-    char url[BUFSIZ];
+    char url[URLSIZE];
     FILE *collection = fopen("collection.txt", "r"); //FIXME make it collection.txt
     int i = 0;
     

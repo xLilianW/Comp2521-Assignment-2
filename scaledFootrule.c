@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 #include "c99.h"
 
 #define TRUE    1
 #define FALSE   0
-
+#define URLSIZE 50
 typedef struct listNode *urlNode;
 
 typedef struct listNode {
@@ -14,7 +15,7 @@ typedef struct listNode {
     urlNode next;
 } listNode;
 
-
+urlNode newNode(char *);
 int *generateP(int *, int);
 int *copyArray(int *, int *, int);
 double calcSFDist(urlNode, char *, int, int);
@@ -22,14 +23,15 @@ int findTCard(urlNode);
 int findCCard(char **);
 int positionInNodeList(char *, urlNode);
 int positionInList(char *, char **);
-char **getCList(urlNode *);
+void getCList(urlNode *, char **);
 urlNode *getTLists(int, char *[]);
 void printResult(int *, double, char **);
 
 
 int main(int argc, char *argv[]){
-    urlNode *tLists[argc-1] = getTLists(argc-1, argv);
-    char **cList = getCList(tLists);
+    urlNode *tLists = getTLists(argc-1, argv);
+    char *cList[BUFSIZ];    
+    getCList(tLists, cList);
     int pList[findCCard(cList)];
     int bestPList[findCCard(cList)];
     int x;
@@ -59,6 +61,13 @@ int main(int argc, char *argv[]){
         i++;
     }
     printResult(bestPList, minDist, cList);
+}
+
+urlNode newNode(char *url) {
+    urlNode new = malloc(sizeof(listNode));
+    assert(new != NULL);
+    new->url = strdup(url);
+    new->next = NULL;
 }
 
 int *copyArray(int *array1, int *array2, int len){
@@ -132,11 +141,9 @@ int positionInList(char *c, char **L){
 }
 
 // Returns union of urls in lists
-char **getCList(urlNode *Lists){
-    char **list;    //malloc?
-    int j = 0;
+void getCList(urlNode *Lists, char *list[BUFSIZ]){
+    int i = 0, j = 0;
     
-    int i = 0;
     while(Lists[i] != NULL){    // Loops through each urlNode
         urlNode curr = Lists[i];
         while(curr != NULL){    // Loops through each urlNode node
@@ -148,13 +155,13 @@ char **getCList(urlNode *Lists){
         }
         i++;
     }
-    return list;
+
 }
 
 // get urlNode of ordered urls in each search urlNode
 urlNode *getTLists(int nFiles, char *files[]){
-    urlNode *tLists[nFiles] = malloc(nFiles*sizeof(urlNode));
-    urlNode *curr = NULL;
+    urlNode *tLists = malloc((nFiles+1)*sizeof(listNode));
+    urlNode curr = NULL;
     int i;
     
     for(i = 0; i < nFiles; i++){    //TODO nFiles-1?
@@ -162,11 +169,12 @@ urlNode *getTLists(int nFiles, char *files[]){
         char *fileName = strdup(files[i+1]);
         fileName = realloc(fileName, strlen(files[i+1]) + strlen(".txt") + 1);
         strcat(fileName, ".txt");   // Open each url file
-        if ((FILE *file = fopen(fileName, "r")) == NULL){
+        FILE *file;
+        if ((file = fopen(fileName, "r")) == NULL){
             perror("");
         }
         
-        char url[BUFSIZ];
+        char url[URLSIZE];
         
         // insert first URL
         if (fscanf(file, " %s", url) == 1) {
@@ -178,12 +186,14 @@ urlNode *getTLists(int nFiles, char *files[]){
         
         // make a urlNode of URLS
         while (fscanf(file, " %s", url) == 1) {
-            urlNode *node = newNode(url);
+            urlNode node = newNode(url);
             curr->next = node;
             curr = node;
         }
         fclose(file);
     }
+    tLists[nFiles] = NULL; // signify end of lists
+    
     return tLists;   
 }
 
