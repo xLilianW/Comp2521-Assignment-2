@@ -23,7 +23,7 @@ double calcSFDist(urlNode, int, int, int);
 int findTCard(urlNode);
 int findCCard(char **);
 int positionInNodeList(char *, urlNode);
-int positionInList(char *, char **);
+int inList(char *, char **, int);
 void getCList(urlNode *, char **);
 urlNode *getTLists(int, char *[]);
 void printResult(int *, double, char **);
@@ -33,6 +33,7 @@ int main(int argc, char *argv[]){
     urlNode *tLists = getTLists(argc-1, argv);
     char *cList[BUFSIZ];
     getCList(tLists, cList);
+    printf("%s\n", cList[0]);
     int pList[findCCard(cList)];
     int bestPList[findCCard(cList)];
     int x;
@@ -51,7 +52,7 @@ int main(int argc, char *argv[]){
         while(j < findCCard(cList)){    // Loops through each element in C urlNode
             int k;
             for(k = 0; k < argc-1; k++){    // Loops through each urlNode
-                totalDist += calcSFDist(tLists[k], positionInList(cList[j], cList), pList[j], findCCard(cList));
+                totalDist += calcSFDist(tLists[k], j, pList[j], findCCard(cList));
                 if(totalDist < minDist || minDist == -1.0){
                     minDist = totalDist;
                     copyArray(bestPList, pList, findCCard(cList));
@@ -129,10 +130,10 @@ int positionInNodeList(char *c, urlNode L){
     return -1;
 }
 
-// Returns position of string in array
-int positionInList(char *c, char **L){
+// Returns position of string in array //TODO change to inList not position
+int inList(char *c, char **L, int numURLs){
     int i = 0;
-    while(L[i] != NULL){
+    while(i < numURLs){
         printf("%s\n", L[i]);
         if(strcmp(L[i], c) == 0){
             return i;
@@ -149,8 +150,9 @@ void getCList(urlNode *Lists, char *list[BUFSIZ]){
     while(Lists[i] != NULL){    // Loops through each urlNode
         urlNode curr = Lists[i];
         while(curr != NULL){    // Loops through each list node
-            if(positionInList(curr->url, list) == -1){
+            if(inList(curr->url, list, j) == -1){
                 list[j] = strdup(curr->url);    // Adds url to urlNode
+                printf("%s\n", list[j]);
                 j++;
             }
             curr = curr->next;
