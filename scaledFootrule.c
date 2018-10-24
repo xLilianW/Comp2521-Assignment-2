@@ -21,10 +21,9 @@ int *generateP(int *, int);
 int *copyArray(int *, int *, int);
 double calcSFDist(urlNode, int, int, int);
 int findTCard(urlNode);
-int findCCard(char **);
 int positionInNodeList(char *, urlNode);
 int inList(char *, char **, int);
-void getCList(urlNode *, char **);
+int getCList(urlNode *, char **);
 urlNode *getTLists(int, char *[]);
 void printResult(int *, double, char **);
 
@@ -32,12 +31,11 @@ void printResult(int *, double, char **);
 int main(int argc, char *argv[]){
     urlNode *tLists = getTLists(argc-1, argv);
     char *cList[BUFSIZ];
-    getCList(tLists, cList);
-    printf("%s\n", cList[0]);
-    int pList[findCCard(cList)];
-    int bestPList[findCCard(cList)];
+    int numURLs = getCList(tLists, cList);
+    int pList[numURLs];
+    int bestPList[numURLs];
     int x;
-    for(x = 0; x < findCCard(cList); x++){
+    for(x = 0; x < numURLs; x++){
         pList[x] = x;
         bestPList[x] = x;
     }
@@ -46,16 +44,17 @@ int main(int argc, char *argv[]){
     double minDist = -1.0;
     
     int i = 0;
-    while(i < findCCard(cList)){    // Loops through each alternate set of p(TODO 1 too many loops?)
-        copyArray(pList, generateP(pList, i), findCCard(cList));
+    while(i < numURLs){    // Loops through each alternate set of p(TODO 1 too many loops?)
+        copyArray(pList, generateP(pList, i), numURLs);
         int j = 0;
-        while(j < findCCard(cList)){    // Loops through each element in C urlNode
+        while(j < numURLs){    // Loops through each element in C urlNode
             int k;
             for(k = 0; k < argc-1; k++){    // Loops through each urlNode
-                totalDist += calcSFDist(tLists[k], j, pList[j], findCCard(cList));
+                totalDist += calcSFDist(tLists[k], j, pList[j], numURLs);
+                printf("calc %lf\n", totalDist);
                 if(totalDist < minDist || minDist == -1.0){
                     minDist = totalDist;
-                    copyArray(bestPList, pList, findCCard(cList));
+                    copyArray(bestPList, pList, numURLs);
                 }
             }
             j++;
@@ -79,15 +78,6 @@ int *copyArray(int *array1, int *array2, int len){
         array1[i] = array2[i];
     }
     return array1;
-}
-
-// Returns cardinality of c list
-int findCCard(char **c){
-    int i = 0;
-    while(c[i] != NULL){
-        i++;
-    }
-    return i;
 }
 
 // Returns new urlNode by swapping adjacent elements in urlNode
@@ -134,7 +124,7 @@ int positionInNodeList(char *c, urlNode L){
 int inList(char *c, char **L, int numURLs){
     int i = 0;
     while(i < numURLs){
-        printf("%s\n", L[i]);
+        //printf("%s\n", L[i]);
         if(strcmp(L[i], c) == 0){
             return i;
         }
@@ -144,7 +134,7 @@ int inList(char *c, char **L, int numURLs){
 }
 
 // Returns union of urls in lists
-void getCList(urlNode *Lists, char *list[BUFSIZ]){
+int getCList(urlNode *Lists, char *list[BUFSIZ]){
     int i = 0, j = 0;
     
     while(Lists[i] != NULL){    // Loops through each urlNode
@@ -152,13 +142,13 @@ void getCList(urlNode *Lists, char *list[BUFSIZ]){
         while(curr != NULL){    // Loops through each list node
             if(inList(curr->url, list, j) == -1){
                 list[j] = strdup(curr->url);    // Adds url to urlNode
-                printf("%s\n", list[j]);
                 j++;
             }
             curr = curr->next;
         }
         i++;
     }
+    return i;
 }
 
 // get urlNode of ordered urls in each search urlNode
