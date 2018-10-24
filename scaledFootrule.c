@@ -8,6 +8,7 @@
 #define TRUE    1
 #define FALSE   0
 #define URLSIZE 50
+
 typedef struct listNode *urlNode;
 
 typedef struct listNode {
@@ -18,7 +19,7 @@ typedef struct listNode {
 urlNode newNode(char *);
 int *generateP(int *, int);
 int *copyArray(int *, int *, int);
-double calcSFDist(urlNode, char *, int, int);
+double calcSFDist(urlNode, int, int, int);
 int findTCard(urlNode);
 int findCCard(char **);
 int positionInNodeList(char *, urlNode);
@@ -68,6 +69,7 @@ urlNode newNode(char *url) {
     assert(new != NULL);
     new->url = strdup(url);
     new->next = NULL;
+    return new;
 }
 
 int *copyArray(int *array1, int *array2, int len){
@@ -96,10 +98,9 @@ int *generateP(int *pList, int i){
 }
 
 // Returns calulated scaled footrule aggregation
-double calcSFDist(urlNode t, char *c, int p, int n){
+double calcSFDist(urlNode t, int c, int p, int n){
     int cardT = findTCard(t);
-    double cPosition = (double) positionInNodeList(c, t);
-    double result = fabs(cPosition/cardT - p/n);
+    double result = fabs((double)c/cardT - p/n);
     return result;
 }
 
