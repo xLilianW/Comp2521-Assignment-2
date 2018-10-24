@@ -10,32 +10,21 @@
 #define TRUE    1
 #define FALSE   0
 
+// Node in the graph, for the list rep
 typedef struct graphListNode {
     char *URL;
     double pageWeight;
     Outgoing next;
 } graphListNode;
 
-// graph representation 
+// Graph representation 
 typedef struct GraphRep {
-	int    nV;          // #URLs
-    graphListNode **URLs;        // list of URLs at their mapped index
-	Outgoing  *connections; // list representation of outgoing links
+	int nV;                     // #URLs
+    graphListNode **URLs;       // list of URLs at their mapped index
+	Outgoing  *connections;     // list representation of outgoing links
 } GraphRep;
 
-// Returns index for page of URL
-int findURLIndex (Graph g, Outgoing node) {
-    int i = 0;
-    while (g->URLs[i] != NULL) {
-        if (strcmp(g->URLs[i]->URL, node->URL) == 0){
-            return i;
-        }
-        i++;
-    }
-    return -1;
-}
-
-// create an empty graph
+// Create an empty graph
 Graph newGraph(int nV, char **urls)
 {
 	Graph new = malloc(sizeof(GraphRep));
@@ -60,6 +49,29 @@ Graph newGraph(int nV, char **urls)
 	return new;
 }
 
+// Clean up a graph
+void freeGraph(Graph g) {
+    if (g == NULL) return;
+    int i;
+    for (i=0; i < g->nV; i++) {
+        free(g->URLs[i]->URL);
+        free(g->URLs[i]);
+    }
+    free(g->URLs);
+    graphListNode *curr, *next;
+    for (i=0; i < g->nV; i++) {
+        curr = g->connections[i];
+        while (curr != NULL) {
+            free(curr->URL);
+            next = curr->next;
+            free(curr);
+            curr = next;
+        }
+    }
+    free(g->connections);
+}
+
+// Create a new list node
 graphListNode *newNode(char *url) {
     graphListNode *new = malloc(sizeof(graphListNode));
     assert(new != NULL);
@@ -68,12 +80,14 @@ graphListNode *newNode(char *url) {
     return new;
 }
 
+// Add an outgoing url for a url
 void addGraphConnection(Graph g, int src, Outgoing dest) {
+    // First dest for the src
     if (g->connections[src] == NULL) {
         g->connections[src] = dest;
     }
     else {
-        // append dest to end of list
+        // Append dest to end of list
         Outgoing curr = g->connections[src];
         while (curr->next != NULL) {
             curr = curr->next;
@@ -82,14 +96,7 @@ void addGraphConnection(Graph g, int src, Outgoing dest) {
     }
 }
 
-// free memory associated with graph
-void dropGraph(Graph g)
-{
-	assert(g != NULL);
-	// not needed for this lab
-}
-
-// find the number of nodes in the graph
+// Find the number of nodes in the graph
 int numNodes(Graph g) {
     if (g == NULL) 
         return 0;
@@ -97,9 +104,20 @@ int numNodes(Graph g) {
         return g->nV;
 }
 
+// Returns index for page of URL
+int findURLIndex (Graph g, Outgoing node) {
+    int i = 0;
+    while (g->URLs[i] != NULL) {
+        if (strcmp(g->URLs[i]->URL, node->URL) == 0){
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
+
 // Returns page with index i
 GraphPage getPage(Graph g, int i){
-    //TODO check if returns null when page doesnt exist
     if(i < numNodes(g)){
         return g->URLs[i];
     }
@@ -121,7 +139,7 @@ char *getURL(GraphPage p){
     return p->URL;
 }
 
-//FIXME FOR TESTING, remove after
+// For testing, prints each url with their outgoing links
 void showGraph(Graph g) {
     int i;
     Outgoing curr = NULL; 

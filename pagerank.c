@@ -6,7 +6,15 @@
 #include "readData.h"
 
 // Creates file containing list of urls ordered by page ranks
-void pageRankW(double d, double diffPR, int maxIterations){
+int main(int argc, char *argv[]){
+    if (argc < 4) {
+        fprintf(stderr, "Correct Usage: ./pagerank d diffPR maxIterations\n");
+        exit(1);
+    }
+    
+    double d = atof(argv[1]), diffPR = atof(argv[2]);
+    int maxIterations = atoi(argv[3]);
+    
     Graph g = collectOutgoingURLs();
     
     for(int i = 0; i < numNodes(g); i++){
@@ -25,6 +33,7 @@ void pageRankW(double d, double diffPR, int maxIterations){
         i++;
     }
     orderWGraphPages(g);
+    freeGraph(g);
 }
 
 // Calculates page rank

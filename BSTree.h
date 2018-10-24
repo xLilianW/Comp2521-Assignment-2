@@ -12,7 +12,7 @@ typedef struct BSTListNode *BSTPage;
 // create an empty BSTree
 BSTree newBSTree();
 // free memory associated with BSTree
-void dropBSTree(BSTree);
+void freeBSTree(BSTree);
 // print the BST in infix order
 void BSTreeInfix(BSTree, FILE *);
 // print the BST node and its BSTPageList

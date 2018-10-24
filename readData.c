@@ -11,18 +11,20 @@ int collectURLs(char *urls[BUFSIZ]);
 void lowercase(char *word);
 char *removePunctuation(char *word);
 
-Graph collectOutgoingURLs () {    
+Graph collectOutgoingURLs() {    
     char *urls[BUFSIZ];
     int i, nURLs = collectURLs(urls);
     
     Graph g = newGraph(nURLs, urls);    // Make empty graph
+    // read in outgoing urls for each url
     for(i = 0; i < numNodes(g); i++){
+        // open the file
         char *fileName = strdup(urls[i]);
         fileName = realloc(fileName, strlen(urls[i]) + strlen(".txt") + 1);
         strcat(fileName, ".txt");   // Open each url file
         FILE *urlFile = fopen(fileName, "r");
         
-        fscanf(urlFile, "%*[^\n]\n"); // skip #start section 1
+        fscanf(urlFile, "%*[^\n]\n"); // skip #start Section-1
         
         char outgoingURL[URLSIZE];
         fscanf(urlFile, " %s", outgoingURL);
@@ -30,7 +32,7 @@ Graph collectOutgoingURLs () {
         while (strcmp(outgoingURL, "#end") != 0) { 
             Outgoing hyperlink = newNode(outgoingURL);
             addGraphConnection(g, i, hyperlink);
-            fscanf(urlFile, " %s", outgoingURL);    // Scan in outgoing URLs
+            fscanf(urlFile, " %s", outgoingURL);    
         }
         
         fclose(urlFile);
@@ -39,19 +41,21 @@ Graph collectOutgoingURLs () {
     return g; 
 }
 
-// update invertedIndex according to section 2 of a url file
+// update invertedIndex according to section 2 of url files
 BSTree collectInvertedIndex() {
     char *urls[BUFSIZ];
     BSTree invertedIndex = newBSTree();
     int i, j, nURLs = collectURLs(urls);
     
+    // loop through each url file and add the words & urls to the tree
     for (i = 0; i < nURLs; i++) {
+        // open the file
         char *fileName = strdup(urls[i]);
         fileName = realloc(fileName, strlen(urls[i]) + strlen(".txt") + 1);
         strcat(fileName, ".txt");   // Open each url file
         FILE *urlFile = fopen(fileName, "r");
         
-        fscanf(urlFile, "%*[^\n]%*[^#]#%*[^#]#%*[^\n]\n"); // skip to section 2 // skip to section 2
+        fscanf(urlFile, "%*[^\n]%*[^#]#%*[^#]#%*[^\n]\n"); // skip to section 2 
 
         char word[BUFSIZ];
         fscanf(urlFile, " %s", word);
@@ -66,6 +70,7 @@ BSTree collectInvertedIndex() {
             invertedIndex = BSTreeInsert(invertedIndex, word);
             BSTLink node = BSTreeFind(invertedIndex, word);
             BSTAddBSTPage(urls[i], node);
+            
             fscanf(urlFile, " %s", word);
         }
         fclose(urlFile);
@@ -91,6 +96,7 @@ int collectURLs(char *urls[BUFSIZ]) {
 }
 
 // from https://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
+// makes a string lower case
 void lowercase(char *word) {
     for ( ; *word; ++word) *word = tolower(*word);
 }

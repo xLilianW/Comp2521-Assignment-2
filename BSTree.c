@@ -16,6 +16,12 @@ typedef struct BSTNode {
 	BSTLink left, right;
 } BSTNode;
 
+// create a new empty BSTree
+BSTree newBSTree()
+{
+	return NULL;
+}
+
 // make a new node containing a word
 static
 BSTLink newBSTNode(char *word)
@@ -38,18 +44,21 @@ BSTPage newBSTPage(char *url) {
     return new;
 }
 
-// create a new empty BSTree
-BSTree newBSTree()
-{
-	return NULL;
-}
-
 // free memory associated with BSTree
-void dropBSTree(BSTree t)
+void freeBSTree(BSTree t)
 {
 	if (t == NULL) return;
-	dropBSTree(t->left);
-	dropBSTree(t->right);
+	freeBSTree(t->left);
+	freeBSTree(t->right);
+	
+	free(t->word);
+	BSTPage curr = t->BSTPageList, next;
+	while (curr != NULL) {
+	    free(curr->URL);
+	    next = curr->next;
+	    free(curr);
+	    curr = next;
+	}
 	free(t);
 }
 
