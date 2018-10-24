@@ -31,7 +31,7 @@ void printResult(int *, double, char **);
 
 int main(int argc, char *argv[]){
     urlNode *tLists = getTLists(argc-1, argv);
-    char *cList[BUFSIZ];    
+    char *cList[BUFSIZ];
     getCList(tLists, cList);
     int pList[findCCard(cList)];
     int bestPList[findCCard(cList)];
@@ -133,6 +133,7 @@ int positionInNodeList(char *c, urlNode L){
 int positionInList(char *c, char **L){
     int i = 0;
     while(L[i] != NULL){
+        printf("%s\n", L[i]);
         if(strcmp(L[i], c) == 0){
             return i;
         }
@@ -147,7 +148,7 @@ void getCList(urlNode *Lists, char *list[BUFSIZ]){
     
     while(Lists[i] != NULL){    // Loops through each urlNode
         urlNode curr = Lists[i];
-        while(curr != NULL){    // Loops through each urlNode node
+        while(curr != NULL){    // Loops through each list node
             if(positionInList(curr->url, list) == -1){
                 list[j] = strdup(curr->url);    // Adds url to urlNode
                 j++;
@@ -156,7 +157,6 @@ void getCList(urlNode *Lists, char *list[BUFSIZ]){
         }
         i++;
     }
-
 }
 
 // get urlNode of ordered urls in each search urlNode
