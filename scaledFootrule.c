@@ -167,11 +167,8 @@ urlNode *getTLists(int nFiles, char *files[]){
     
     for(i = 0; i < nFiles; i++){    //TODO nFiles-1?
         // open file
-        char *fileName = strdup(files[i+1]);
-        fileName = realloc(fileName, strlen(files[i+1]) + strlen(".txt") + 1);
-        strcat(fileName, ".txt");   // Open each url file
         FILE *file;
-        if ((file = fopen(fileName, "r")) == NULL){
+        if ((file = fopen(files[i+1], "r")) == NULL){
             perror("");
         }
         
