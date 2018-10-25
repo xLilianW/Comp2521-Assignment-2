@@ -82,6 +82,9 @@ graphListNode *newNode(char *url) {
 
 // Add an outgoing url for a url
 void addGraphConnection(Graph g, int src, Outgoing dest) {
+    // ignore self loops
+    if (strcmp(g->URLs[src]->URL, dest->URL) == 0) return;
+     
     // First dest for the src
     if (g->connections[src] == NULL) {
         g->connections[src] = dest;
