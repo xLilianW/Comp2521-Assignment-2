@@ -27,4 +27,8 @@ Outgoing getConnections(Graph, int);
 
 int countInLinks(Graph g, GraphPage url);
 int isInLink(Graph g, GraphPage u, GraphPage v);
+double inLinkPopularity(Graph, GraphPage, GraphPage);
+double outLinkPopularity(Graph, GraphPage, GraphPage);
+int countOutLinks(Graph, int);
+
 #endif

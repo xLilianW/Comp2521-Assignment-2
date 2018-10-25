@@ -3,12 +3,7 @@
 
 #include "graph.h"
 
-void pageRankW(double, double, int);
 double calcPageRank(Graph, GraphPage, double);
-double inLinkPopularity(Graph, GraphPage, GraphPage);
-double outLinkPopularity(Graph, GraphPage, GraphPage);
-int countOutLinks(Graph, int);
-void orderWGraphPages(Graph); //improve func name
-int findURLIndex(Graph, GraphPage);
+void orderWGraphPages(Graph); 
 
 #endif

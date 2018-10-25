@@ -52,47 +52,6 @@ double calcPageRank(Graph g, GraphPage p, double d){
     return pageRank;
 }
 
-// Calculates inlink popularity
-double inLinkPopularity(Graph g, GraphPage v, GraphPage u){
-    double sumRefLinks = 0.0;
-    int curr = findURLIndex(g, v);
-    while(getPage(g, curr) != NULL){    // Search through all reference pages for v
-        sumRefLinks += countInLinks(g, getPage(g, curr));
-        curr++;
-    }
-    return countInLinks(g, u)/sumRefLinks;
-}
-
-// Calculates outlink popularity
-double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
-    double sumRefLinks = 0.0;
-    int curr = findURLIndex(g, v);
-    while(getPage(g, curr) != NULL){    // Search through all reference pages for v
-        // Ignore parallel edges
-        int numOutLinks = countOutLinks(g, curr);
-        if(numOutLinks > 0){
-            sumRefLinks += numOutLinks;
-        }else{
-            sumRefLinks += 0.5;
-        }
-        curr++;
-    }
-    printf("Wout %s %s %lf\n",getURL(v),getURL(u),countOutLinks(g,findURLIndex(g,u))/sumRefLinks);
-    return countOutLinks(g, findURLIndex(g, u))/sumRefLinks;
-}
-
-// Counts number of outgoing links a given url has
-int countOutLinks(Graph g, int index){
-    int numOutLinks = 0;
-    int curr = index;
-    while(getPage(g, curr) != NULL){
-        //ignore self loops
-        
-        numOutLinks++;
-        curr++;
-    }
-    return numOutLinks;
-}
 
 // Orders urls by page rank
 void orderWGraphPages(Graph g){
