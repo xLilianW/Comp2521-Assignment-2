@@ -91,13 +91,12 @@ int *copyArray(int *array1, int *array2, int len){
 
 // Returns new urlNode by swapping adjacent elements in urlNode
 int *generateP(int *pList, int i, int nURLs){
-    int temp = pList[i];
-    int x = i+1;
-    if (x >= nURLs) {
-        x = (i+1)%nURLs;
-    }
-    pList[i] = pList[x];
-    pList[x] = temp;
+    int x = i%nURLs;
+    int y = (i+1)%nURLs;
+    
+    int temp = pList[x];
+    pList[x] = pList[y];
+    pList[y] = temp;
     return pList;
 }
 
