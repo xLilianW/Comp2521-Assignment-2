@@ -63,35 +63,13 @@ double inLinkPopularity(Graph g, GraphPage v, GraphPage u){
     return countInLinks(g, u)/sumRefLinks;
 }
 
-// Returns number of inlinks a url has
-int countInLinks(Graph g, GraphPage url){
-    int numInLinks = 0;
-    int i = 0;
-    for (i = 0; i < numNodes(g); i++){
-        if(isInLink(g, url, getPage(g, i))){
-            numInLinks++;
-        }
-    }
-    return numInLinks;
-}
-// Returns 1 if Page v has an outgoing link to Page u, an ingoing link of u
-int isInLink(Graph g, GraphPage u, GraphPage v){
-    int curr = findURLIndex(g, v);
-    while(getPage(g, curr) != NULL){
-        if(strcmp(getURL(getPage(g, curr)), getURL(u)) == 0){
-            return 1;
-        }
-        curr++;
-    }
-    return 0;
-} 
 
 // Calculates outlink popularity
 double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
     double sumRefLinks = 0.0;
     int curr = findURLIndex(g, v);
     while(getPage(g, curr) != NULL){    // Search through all reference pages for v
-        //ignore parallel edges
+        // Ignore parallel edges
         int numOutLinks = countOutLinks(g, curr);
         if(numOutLinks > 0){
             sumRefLinks += numOutLinks;

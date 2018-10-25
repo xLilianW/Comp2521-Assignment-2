@@ -23,5 +23,8 @@ GraphPage getPage(Graph, int);
 void setPageWeight(GraphPage, double);
 double getPageWeight(GraphPage);
 char *getURL(GraphPage);
+Outgoing getConnections(Graph, int);
 
+int countInLinks(Graph g, GraphPage url);
+int isInLink(Graph g, GraphPage u, GraphPage v);
 #endif

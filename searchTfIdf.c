@@ -11,6 +11,7 @@
 
 typedef struct listNode *URL;
 
+// node containing a url
 struct listNode {
     char *URL;
     double tfidf;
@@ -32,11 +33,12 @@ void lowercase(char *word);
 char *removePunctuation(char *string);
 void showURLList(URL listHead);
 
+// Make a sorted list of urls based on number of matching search terms and tfidf
 int main(int argc, char *argv[]){
     URL URLList = NULL;
     int nDocs = getNDocs();
     
-    // Make list of URLs based on number of search terms in each URL
+    // Add to and update URLList based on urls containing the search term
     int i;
     for(i = 1; i < argc; i++){
         printf("%d %s\n", i, argv[i]);
@@ -244,7 +246,7 @@ double termFrequency(char *term, char *url) {
 // calculate inverse document frequency
 double inverseDocumentFrequency(double containingDocs, double nDocs) {
     double quotient = nDocs/containingDocs;
-    double inverseDocFreq = log(quotient);
+    double inverseDocFreq = log10(quotient);
     return inverseDocFreq;
 }
 

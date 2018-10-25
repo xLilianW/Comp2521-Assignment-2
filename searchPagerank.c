@@ -94,8 +94,8 @@ int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
     while (fgets(fileLine, BUFSIZ, invertedIndex) != NULL){
         searchTermLine = strdup(fileLine);
         term = strsep(&searchTermLine, " ");
-        if (strcmp(term, searchTerm) == 0) {    // check if this is the line containing urls for the search term
-            strsep(&searchTermLine, " ");    // Skip the second space
+        if (strcmp(term, searchTerm) == 0) {    // Check if this is the line containing urls for the search term
+            strsep(&searchTermLine, " ");       // Skip the second space
             found = TRUE;
             break;
         }
@@ -114,7 +114,8 @@ int sTermURLs(char *searchTerm, char *urlArray[BUFSIZ]){
         urlToken = strsep(&searchTermLine, " ");
         i++;
     }
-    // extract the last url //FIXME can make more efficient?
+    
+    // Extract the last url 
     if (urlToken != NULL) {
         urlToken = strsep(&urlToken, "\n"); // Strip the trailing newline
         urlArray[i] = malloc(strlen(urlToken) + 1);
@@ -140,8 +141,8 @@ URL URLInList(URL list, char *u){
 
 // Insert a URL into the URLList
 URL insertURL(URL listHead, URL url) {
-    printf("Inserting: %s\n", url->URL);
     URL curr = listHead, prev = NULL;
+    
     // url is new listHead
     if (listHead == NULL || url->countTerms > listHead->countTerms ||
         (url->countTerms == listHead->countTerms && url->pageWeight > listHead->pageWeight)) {
@@ -149,22 +150,21 @@ URL insertURL(URL listHead, URL url) {
         return url;
     }
     
-    // get to the nodes with the same countTerms as url
+    // Get to the nodes with the same countTerms as url
     while (curr != NULL && curr->countTerms > url->countTerms) {
         prev = curr;
         curr = curr->next;
     }
-    // get to the right pageWeight position
+    // Get to the right pageWeight position
     while (curr != NULL && curr->countTerms == url->countTerms && curr->pageWeight > url->pageWeight) {
         prev = curr;
         curr = curr->next;
     }
     
-    //FIXME the condition is curr->next != NULL because i cbf having a "prev" pointer, just in case the url needs to be added at te end
-    //FIXME Check if these are all the cases
-    if (curr == NULL) {
+    // Insert the url
+    if (curr == NULL) { // Append
         prev->next = url;
-    }else{ // put url before curr
+    }else{ // Put url before curr
         prev->next = url;
         url->next = curr;
     }
@@ -180,7 +180,7 @@ URL sortList(URL listHead, URL url) {
     return listHead;
 }
 
-// delete a url from the URLList
+// Delete a url from the URLList
 URL deleteURL(URL listHead, URL url){
     if (listHead == url) {
         return url->next;
@@ -195,13 +195,13 @@ URL deleteURL(URL listHead, URL url){
     return listHead;
 }
 
-// get the pageweight of a url
+// Get the pageweight of a url
 double getPageWeight(char *url) {
     double pageWeight;
     FILE *file = fopen("pagerankList.txt", "r");
     char fileLine[BUFSIZ];
     
-    // find the line regarding the url in the file
+    // Find the line regarding the url in the file
     while (fgets(fileLine, BUFSIZ, file) != NULL) {
         if (strstr(fileLine, url) != NULL)
             break;
@@ -214,12 +214,13 @@ double getPageWeight(char *url) {
     return pageWeight;
 }
 
+// Print out the URLList
 void showURLList(URL listHead) {
-    printf("\n========\n");
     URL curr = listHead;
+    
     int i = 0;
     while(curr != NULL && i < 30) {
-        printf("%s %d %lf\n", curr->URL, curr->countTerms, curr->pageWeight);
+        printf("%s\n", curr->URL);
         curr = curr->next;
         i++;
     }

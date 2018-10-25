@@ -142,6 +142,14 @@ char *getURL(GraphPage p){
     return p->URL;
 }
 
+// Returns the linked list of connections for a given url
+Outgoing getConnections(Graph g, int i) {
+    if (i < g->nV) 
+        return g->connections[i];
+    else
+        return NULL;
+}
+
 // For testing, prints each url with their outgoing links
 void showGraph(Graph g) {
     int i;
@@ -156,3 +164,27 @@ void showGraph(Graph g) {
         printf("\n");
     }
 }
+
+// Returns number of inlinks a url has
+int countInLinks(Graph g, GraphPage url){
+    int numInLinks = 0;
+    int i = 0;
+    for (i = 0; i < g->nV; i++){
+        if(isInLink(g, url, getPage(g, i))){
+            numInLinks++;
+        }
+    }
+    return numInLinks;
+}
+// Returns 1 if Page v has an outgoing link to Page u, an ingoing link of u
+int isInLink(Graph g, GraphPage u, GraphPage v){
+    int vIndex = findURLIndex(g, v);
+    Outgoing curr = g->connections[vIndex];
+    while(curr != NULL){
+        if(strcmp(curr->URL, u->URL) == 0){
+            return 1;
+        }
+        curr = curr->next;
+    }
+    return 0;
+} 
