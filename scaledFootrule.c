@@ -21,10 +21,10 @@ int *generateP(int *, int, int);
 int *copyArray(int *, int *, int);
 double calcSFDist(urlNode, int, int, int);
 int findTCard(urlNode);
-int positionInNodeList(char *, urlNode);
 int inList(char *, char **, int);
 int getCList(urlNode *, char **);
 urlNode *getTLists(int, char *[]);
+char *getURL(urlNode list, int i);
 int getCIndex(char **cList, char *url, int numCURLs);
 int getPIndex(int *pList, int index, int numCURLs);
 int fac(int);
@@ -51,10 +51,10 @@ int main(int argc, char *argv[]){
     int i = 0, j, k;
     while(i < pCombinations){    // Loops through each alternate set of p(TODO 1 too many loops?)
         copyArray(pList, generateP(pList, i, numCURLs), numCURLs);
-        j = 0;
         totalDist = 0.0;
         for(k = 0; k < argc-2; k++){    // Loops through each list file
             numTURLs = findTCard(tLists[k]);
+            j = 0;
             while(j < numTURLs){    // Loops through each node in the list
                 char *url = getURL(tLists[k], j);
                 cIndex = getCIndex(cList, url, numCURLs);
@@ -94,7 +94,7 @@ int *generateP(int *pList, int i, int nURLs){
     int temp = pList[i];
     int x = i+1;
     if (x >= nURLs) {
-        x = i%nURLs;
+        x = (i+1)%nURLs;
     }
     pList[i] = pList[x];
     pList[x] = temp;
@@ -103,7 +103,7 @@ int *generateP(int *pList, int i, int nURLs){
 
 // Returns calulated scaled footrule aggregation
 double calcSFDist(int cardT, int c, int p, int n){
-    double result = fabs((double)c/cardT - p/n);
+    double result = fabs((double)c/cardT - (p+1)/n);
     return result;
 }
 
@@ -116,20 +116,6 @@ int findTCard(urlNode L){
         i++;
     }
     return i;
-}
-
-// Returns position of string in node list
-int positionInNodeList(char *c, urlNode L){
-    urlNode curr = L;
-    int i = 0;
-    while(curr != NULL){
-        if(strcmp(curr->url, c) == 0){
-            return i;
-        }
-        i++;
-        curr = curr->next;
-    }
-    return -1;
 }
 
 // Returns position of string in array //TODO change to inList not position
