@@ -32,6 +32,7 @@ double inverseDocumentFrequency(double containingDocs, double nDocs);
 void lowercase(char *word);
 char *removePunctuation(char *string);
 void showURLList(URL listHead);
+void freeURLList(URL listHead);
 
 // Make a sorted list of urls based on number of matching search terms and tfidf
 int main(int argc, char *argv[]){
@@ -47,6 +48,7 @@ int main(int argc, char *argv[]){
     // Print the results 
     showURLList(URLList);
     
+    freeURLList(URLList);
 }
 
 // Make a new URL node
@@ -286,5 +288,15 @@ void showURLList(URL listHead) {
     }
 }
 
+// clean up the urllist
+void freeURLList(URL listHead) {
+    URL curr = listHead, next;
+    while (curr != NULL) {
+        free(curr->URL);
+        next = curr->next;
+        free(curr);
+        curr = next;
+    }
+}
 
 

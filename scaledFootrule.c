@@ -35,6 +35,7 @@ int main(int argc, char *argv[]){
     int pList[numURLs];
     int bestPList[numURLs];
     int x;
+    
     for(x = 0; x < numURLs; x++){
         pList[x] = x;
         bestPList[x] = x;
