@@ -19,7 +19,6 @@ int main(int argc, char *argv[]){
     int maxIterations = atoi(argv[3]);
     
     Graph g = collectOutgoingURLs();
-    showGraph(g);
     
     for(int i = 0; i < numNodes(g); i++){
         setPageWeight(getPage(g, i), 1.0/numNodes(g));    // Initialise page weights

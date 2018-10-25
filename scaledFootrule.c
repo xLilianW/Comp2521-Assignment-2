@@ -58,7 +58,7 @@ int main(int argc, char *argv[]){
             while(j < numTURLs){    // Loops through each node in the list
                 char *url = getURL(tLists[k], j);
                 cIndex = getCIndex(cList, url, numCURLs);
-                pIndex = (pList, cIndex, numCURLs);
+                pIndex = gedPIndex(pList, cIndex, numCURLs);
                 totalDist += calcSFDist(numTURLs, j, pIndex, numCURLs);
                 j++;
             }
