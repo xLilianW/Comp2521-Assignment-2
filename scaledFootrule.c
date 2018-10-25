@@ -24,6 +24,7 @@ int findTCard(urlNode);
 int inList(char *, char **, int);
 int getCList(urlNode *, char **, int);
 urlNode *getTLists(int, char *[]);
+void freeTLists(urlNode *);
 char *getURL(urlNode list, int i);
 int getCIndex(char **cList, char *url, int numCURLs);
 int getPIndex(int *pList, int index, int numCURLs);
@@ -70,7 +71,10 @@ int main(int argc, char *argv[]){
         }
         i++;
     }
+    
     printResult(bestPList, minDist, cList, numCURLs);
+    
+    freeTLists(tLists);
 }
 
 urlNode newNode(char *url) {
@@ -97,9 +101,7 @@ int *generateP(int *pList, int i, int nURLs){
     int temp = pList[x];
     pList[x] = pList[y];
     pList[y] = temp;
-    for(i=0; i < nURLs; i++) {
-        printf("%d ", pList[i]);
-    }
+
     return pList;
 }
 
@@ -185,6 +187,22 @@ urlNode *getTLists(int nFiles, char *files[]){
     tLists[nFiles] = NULL; // signify end of lists
     
     return tLists;   
+}
+
+// cleans up tlists
+void freeTLists(urlNode *tLists) {
+    int i = 0;
+    urlNode curr = NULL, next;
+    while (tLists[i] != NULL) {
+        curr = tLists[i];
+        while (curr != NULL) {
+            free(curr->url);
+            next = curr->next;
+            free(curr);
+            curr = next;
+        }
+        i++;
+    }
 }
 
 // Returns the jth url in a tlist
