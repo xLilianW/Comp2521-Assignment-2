@@ -56,7 +56,7 @@ void orderWGraphPages(Graph g){
                 largestPage = j;
             }
         }
-        fprintf(pagerankList, "%s, %d, %.7f\n", getURL(getPage(g, largestPage)), countOutLinks(g, largestPage), getPageWeight(getPage(g, largestPage)));
+        fprintf(pagerankList, "%s, %d, %.7f\n", getURL(getPage(g, largestPage)), (int)countOutLinks(g, largestPage), getPageWeight(getPage(g, largestPage)));
         setPageWeight(getPage(g, largestPage), -1);
     }
     fclose(pagerankList);

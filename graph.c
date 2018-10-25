@@ -214,28 +214,22 @@ double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
     int vIndex = findURLIndex(g, v);
     Outgoing curr = g->connections[vIndex];
     while(curr != NULL){    // Search through all reference pages for v
-        int numOutLinks = countOutLinks(g, findURLIndex(g,curr));
-        if(numOutLinks > 0){
-            sumRefLinks += numOutLinks;
-        }else{
-            sumRefLinks += 0.5;
-        }
+        sumRefLinks += countOutLinks(g, findURLIndex(g,curr));
         curr = curr->next;
     }
-    double outLinksU = (double)countOutLinks(g, findURLIndex(g, u));
-    if(outLinksU > 0){
-        return outLinksU/sumRefLinks;
-    }
-    return 0.5/sumRefLinks;
+    return countOutLinks(g, findURLIndex(g, u))/sumRefLinks;
 }
 
 // Counts number of outgoing links a given url has
-int countOutLinks(Graph g, int index){
-    int numOutLinks = 0;
+double countOutLinks(Graph g, int index){
+    double numOutLinks = 0;
     Outgoing curr = g->connections[index];
     while(curr != NULL){
         numOutLinks++;
         curr = curr->next;
     }
-    return numOutLinks;
+    if(numOutLinks > 0){
+        return numOutLinks;
+    }
+    return 0.5;
 } 
