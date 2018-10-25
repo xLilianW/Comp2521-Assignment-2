@@ -45,6 +45,7 @@ double calcPageRank(Graph g, GraphPage p, double d){
     int i = 0;
     for(i = 0; i < numNodes(g); i++){
         if(isInLink(g, p, getPage(g, i))){
+            printf("TRUE");
             sumOutGoing += getPageWeight(getPage(g, i))*inLinkPopularity(g, getPage(g, i), p)*outLinkPopularity(g, getPage(g, i), p);
         }
     }
@@ -63,7 +64,6 @@ double inLinkPopularity(Graph g, GraphPage v, GraphPage u){
     return countInLinks(g, u)/sumRefLinks;
 }
 
-
 // Calculates outlink popularity
 double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
     double sumRefLinks = 0.0;
@@ -78,6 +78,7 @@ double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
         }
         curr++;
     }
+    printf("Wout %s %s %lf\n",getURL(v),getURL(u),countOutLinks(g,findURLIndex(g,u))/sumRefLinks);
     return countOutLinks(g, findURLIndex(g, u))/sumRefLinks;
 }
 
