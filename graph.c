@@ -197,7 +197,7 @@ double inLinkPopularity(Graph g, GraphPage v, GraphPage u){
     while(curr != NULL){    // Search through all reference pages for v
         sumRefLinks += countInLinks(g, curr);
         curr = curr->next;
-    }
+    } 
     return countInLinks(g, u)/sumRefLinks;
 }
 
@@ -207,7 +207,7 @@ double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
     int vIndex = findURLIndex(g, v);
     Outgoing curr = g->connections[vIndex];
     while(curr != NULL){    // Search through all reference pages for v
-        int numOutLinks = countOutLinks(g, vIndex);
+        int numOutLinks = countOutLinks(g, findURLIndex(g,curr));
         if(numOutLinks > 0){
             sumRefLinks += numOutLinks;
         }else{
@@ -215,8 +215,11 @@ double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
         }
         curr = curr->next;
     }
-    printf("Wout %s %s %lf\n",getURL(v),getURL(u),countOutLinks(g,findURLIndex(g,u))/sumRefLinks);
-    return countOutLinks(g, findURLIndex(g, u))/sumRefLinks;
+    double outLinksU = (double)countOutLinks(g, findURLIndex(g, u));
+    if(outLinksU > 0){
+        return outLinksU/sumRefLinks;
+    }
+    return 0.5/sumRefLinks;
 }
 
 // Counts number of outgoing links a given url has
