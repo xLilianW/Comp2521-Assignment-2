@@ -26,6 +26,7 @@ URL sortList(URL listHead, URL url);
 URL deleteURL(URL listHead, URL url);
 double getPageWeight(char *url);
 void showURLList(URL listHead);
+void freeURLList(URL listHead);
 
 // Makes a list of urls sorted by number of matching search terms and pageweight
 int main(int argc, char *argv[]){
@@ -40,6 +41,7 @@ int main(int argc, char *argv[]){
     // Print the results 
     showURLList(URLList);
     
+    freeURLList(URLList);
 }
 
 // Create a new url node
@@ -223,6 +225,17 @@ void showURLList(URL listHead) {
         printf("%s\n", curr->URL);
         curr = curr->next;
         i++;
+    }
+}
+
+// clean up the urllist
+void freeURLList(URL listHead) {
+    URL curr = listHead, next;
+    while (curr != NULL) {
+        free(curr->URL);
+        next = curr->next;
+        free(curr);
+        curr = next;
     }
 }
 
