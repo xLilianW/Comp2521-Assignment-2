@@ -25,6 +25,8 @@ int positionInNodeList(char *, urlNode);
 int inList(char *, char **, int);
 int getCList(urlNode *, char **);
 urlNode *getTLists(int, char *[]);
+int getCIndex(char **cList, char *url, int numCURLs);
+int getPIndex(int *pList, int index, int numCURLs);
 int fac(int);
 void printResult(int *, double, char **);
 
@@ -34,6 +36,7 @@ int main(int argc, char *argv[]){
     char *cList[BUFSIZ];
     int numCURLs = getCList(tLists, cList), numTURLs;
     int pList[numCURLs], bestPList[numCURLs];
+    int pIndex, cIndex;
     int pCombinations = fac(numCURLs);
     
     int x;
@@ -54,8 +57,9 @@ int main(int argc, char *argv[]){
             numTURLs = findTCard(tLists[k]);
             while(j < numTURLs){    // Loops through each node in the list
                 char *url = getURL(tLists[k], j);
-                // find what index the url is in p
-                totalDist += calcSFDist(numTURLs, j, pList[j], numCURLs);
+                cIndex = getCIndex(cList, url, numCURLs);
+                pIndex = (pList, cIndex, numCURLs);
+                totalDist += calcSFDist(numTURLs, j, pIndex, numCURLs);
                 j++;
             }
         }
@@ -203,6 +207,28 @@ char *getURL(urlNode list, int i) {
         curr = curr->next;
     }
     return curr->url;
+}
+
+// Returns the urls index in cList
+int getCIndex(char **cList, char *url, int numCURLs) {
+    int i;
+    for (i=0; i < numCURLs; i++) {
+        if (strcmp(cList[i], url) == 0)
+            return i;
+    }
+    
+    return -1; // should never get here    
+}
+
+// Returns the index's index in pList
+int getPIndex(int *pList, int index, int numCURLs) {
+    int i;
+    for (i=0; i < numCURLs; i++) {
+        if (pList[i] == index)
+            return i;
+    }
+    
+    return -1; // should never get here    
 }
 
 // Calculates n!
