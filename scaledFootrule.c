@@ -50,20 +50,21 @@ int main(int argc, char *argv[]){
     
     int i = 0, j, k;
     while(i < pCombinations){    // Loops through each alternate set of p(TODO 1 too many loops?)
-        copyArray(pList, generateP(pList, i, numCURLs), numCURLs);
+        copyArray(pList, generateP(pList, i, numCURLs), numCURLs); // generate a P sequence
         totalDist = 0.0;
-        for(k = 0; k < argc-2; k++){    // Loops through each list file
+        for(k = 0; k < argc-1; k++){    // Loops through each list file
             numTURLs = findTCard(tLists[k]);
             j = 0;
             while(j < numTURLs){    // Loops through each node in the list
                 char *url = getURL(tLists[k], j);
                 cIndex = getCIndex(cList, url, numCURLs);
                 pIndex = getPIndex(pList, cIndex, numCURLs);
+                printf("%d %s %d %d\n", j, url, cIndex, pIndex);
                 totalDist += calcSFDist(numTURLs, j, pIndex, numCURLs);
                 j++;
             }
         }
-        printf("calc %lf\n", totalDist);
+        //printf("calc %lf\n", totalDist);
         if(totalDist < minDist || minDist == -1.0){
             minDist = totalDist;
             copyArray(bestPList, pList, numCURLs);
@@ -97,6 +98,9 @@ int *generateP(int *pList, int i, int nURLs){
     int temp = pList[x];
     pList[x] = pList[y];
     pList[y] = temp;
+    for(i=0; i < nURLs; i++) {
+        printf("%d ", pList[i]);
+    }
     return pList;
 }
 
