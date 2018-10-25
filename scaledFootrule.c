@@ -19,22 +19,22 @@ typedef struct listNode {
 urlNode newNode(char *);
 int *generateP(int *, int, int);
 int *copyArray(int *, int *, int);
-double calcSFDist(urlNode, int, int, int);
+double calcSFDist(int, int, int, int);
 int findTCard(urlNode);
 int inList(char *, char **, int);
-int getCList(urlNode *, char **);
+int getCList(urlNode *, char **, int);
 urlNode *getTLists(int, char *[]);
 char *getURL(urlNode list, int i);
 int getCIndex(char **cList, char *url, int numCURLs);
 int getPIndex(int *pList, int index, int numCURLs);
 int fac(int);
-void printResult(int *, double, char **);
+void printResult(int *, double, char **, int);
 
 
 int main(int argc, char *argv[]){
     urlNode *tLists = getTLists(argc-1, argv);
     char *cList[BUFSIZ];
-    int numCURLs = getCList(tLists, cList), numTURLs;
+    int numCURLs = getCList(tLists, cList, argc-1), numTURLs;
     int pList[numCURLs], bestPList[numCURLs];
     int pIndex, cIndex;
     int pCombinations = fac(numCURLs);
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]){
             while(j < numTURLs){    // Loops through each node in the list
                 char *url = getURL(tLists[k], j);
                 cIndex = getCIndex(cList, url, numCURLs);
-                pIndex = gedPIndex(pList, cIndex, numCURLs);
+                pIndex = getPIndex(pList, cIndex, numCURLs);
                 totalDist += calcSFDist(numTURLs, j, pIndex, numCURLs);
                 j++;
             }
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
         }
         i++;
     }
-    printResult(bestPList, minDist, cList);
+    printResult(bestPList, minDist, cList, numCURLs);
 }
 
 urlNode newNode(char *url) {
@@ -131,10 +131,10 @@ int inList(char *c, char **L, int numCURLs){
 }
 
 // Returns union of urls in lists
-int getCList(urlNode *Lists, char *list[BUFSIZ]){
+int getCList(urlNode *Lists, char *list[BUFSIZ], int nFiles){
     int i = 0, j = 0;
     
-    while(Lists[i] != NULL){    // Loops through each urlNode
+    while(i < nFiles){    // Loops through tList
         urlNode curr = Lists[i];
         while(curr != NULL){    // Loops through each list node
             if(inList(curr->url, list, j) == -1){
@@ -145,7 +145,7 @@ int getCList(urlNode *Lists, char *list[BUFSIZ]){
         }
         i++;
     }
-    return i;
+    return j;
 }
 
 // get urlNode of ordered urls in each search urlNode
@@ -185,7 +185,7 @@ urlNode *getTLists(int nFiles, char *files[]){
 }
 
 // Returns the jth url in a tlist
-char *getURL(urlNode list, int i) {
+char *getURL(urlNode list, int j) {
     urlNode curr = list;
     int i;
     for (i=0; i < j; i++) {
@@ -218,17 +218,18 @@ int getPIndex(int *pList, int index, int numCURLs) {
 
 // Calculates n!
 int fac(int n) {
-    int c, fact = 0;
+    int c, fact = 1;
+    printf("%d\n", n);
     for (c = 1; c <= n; c++)
         fact *= c;
     return fact;
 }
 
 // Prints minimum distance and ranking
-void printResult(int *L, double dist, char **c){
+void printResult(int *L, double dist, char **c, int numCURLs){
     printf("%lf\n", dist);
     int i = 0;
-    while(c[L[i]] != NULL){
+    while(i < numCURLs){
         printf("%s\n", c[L[i]]);
         i++;
     }
