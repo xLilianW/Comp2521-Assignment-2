@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
     char *cList[BUFSIZ];
     int numCURLs = getCList(tLists, cList, argc-1);
     int pList[numCURLs], bestPList[numCURLs];
-    int pIndex, cIndex;
+    int tIndex;
     int pCombinations = fac(numCURLs);
     
     int x;
@@ -58,12 +58,12 @@ int main(int argc, char *argv[]){
         while(j < numCURLs){    // Loops through each node in the cList
             for(k = 0; k < argc-1; k++){    // Loops through each list file
                 //char *url = getURL(tLists[k], j);
-                if (inTList(cList[j], tLists[k]) == FALSE) continue;
+                if ((tIndex = inTList(cList[j], tLists[k])) == -1) continue;
                 //cIndex = getCIndex(cList, url, numCURLs);
                 //pIndex = getPIndex(pList, cIndex, numCURLs);
-                totalDist += calcSFDist(tLists[k], j+1, pList[j], numCURLs);
-                j++;
+                totalDist += calcSFDist(tLists[k], tIndex, pList[j], numCURLs);
             }
+            j++;
         }
         printf("calc %lf\n", totalDist);
         if(totalDist < minDist || minDist == -1.0){
@@ -140,13 +140,15 @@ int inCList(char *c, char **L, int numCURLs){
 // Returns position of string in tList
 int inTList(char *c, urlNode L){
     urlNode curr = L;
+    int i = 1;
     while (curr != NULL) {
         if (strcmp(curr->url, c) == 0) {
-            return TRUE;
+            return i;
         }
         curr = curr->next;
+        i++;
     }
-    return FALSE;
+    return -1;
 }
 
 // Returns union of urls in lists
