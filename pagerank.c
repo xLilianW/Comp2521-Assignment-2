@@ -16,6 +16,7 @@ int main(int argc, char *argv[]){
     int maxIterations = atoi(argv[3]);
     
     Graph g = collectOutgoingURLs();
+    showGraph(g);
     
     for(int i = 0; i < numNodes(g); i++){
         setPageWeight(getPage(g, i), 1.0/numNodes(g));    // Initialise page weights
@@ -90,7 +91,8 @@ double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
     double sumRefLinks = 0.0;
     int curr = findURLIndex(g, v);
     while(getPage(g, curr) != NULL){    // Search through all reference pages for v
-        int numOutLinks = countOutLinks(g, getPage(g, curr));
+        //ignore parallel edges
+        int numOutLinks = countOutLinks(g, curr);
         if(numOutLinks > 0){
             sumRefLinks += numOutLinks;
         }else{
@@ -98,14 +100,16 @@ double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
         }
         curr++;
     }
-    return countOutLinks(g, u)/sumRefLinks;
+    return countOutLinks(g, findURLIndex(g, u))/sumRefLinks;
 }
 
 // Counts number of outgoing links a given url has
-int countOutLinks(Graph g, GraphPage url){
+int countOutLinks(Graph g, int index){
     int numOutLinks = 0;
-    int curr = findURLIndex(g, url);
+    int curr = index;
     while(getPage(g, curr) != NULL){
+        //ignore self loops
+        
         numOutLinks++;
         curr++;
     }
@@ -130,7 +134,7 @@ void orderWGraphPages(Graph g){
                 largestPage = j;
             }
         }
-        fprintf(pagerankList, "%s, %d, %.7f\n", getURL(getPage(g, largestPage)), countOutLinks(g, getPage(g, largestPage)), getPageWeight(getPage(g, largestPage)));
+        fprintf(pagerankList, "%s, %d, %.7f\n", getURL(getPage(g, largestPage)), countOutLinks(g, largestPage), getPageWeight(getPage(g, largestPage)));
         setPageWeight(getPage(g, largestPage), -1);
     }
     fclose(pagerankList);
