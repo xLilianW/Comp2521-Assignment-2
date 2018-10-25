@@ -27,8 +27,6 @@ int getCList(urlNode *, char **, int);
 urlNode *getTLists(int, char *[]);
 void freeTLists(urlNode *);
 char *getURL(urlNode list, int i);
-int getCIndex(char **cList, char *url, int numCURLs);
-int getPIndex(int *pList, int index, int numCURLs);
 int fac(int);
 void printResult(int *, double, char **, int);
 
@@ -51,16 +49,13 @@ int main(int argc, char *argv[]){
     double minDist = -1.0;
     
     int i = 0, j, k;
-    while(i < pCombinations){    // Loops through each alternate set of p(TODO 1 too many loops?)
+    while(i < pCombinations){    // Loops through each alternate set of p
         copyArray(pList, generateP(pList, i, numCURLs), numCURLs); // generate a P sequence
         totalDist = 0.0;
         j = 0;
         while(j < numCURLs){    // Loops through each node in the cList
             for(k = 0; k < argc-1; k++){    // Loops through each list file
-                //char *url = getURL(tLists[k], j);
-                if ((tIndex = inTList(cList[j], tLists[k])) == -1) continue;
-                //cIndex = getCIndex(cList, url, numCURLs);
-                //pIndex = getPIndex(pList, cIndex, numCURLs);
+                if ((tIndex = inTList(cList[j], tLists[k])) == -1) continue; // node not in tList
                 totalDist += calcSFDist(tLists[k], tIndex, pList[j], numCURLs);
             }
             j++;
@@ -72,7 +67,7 @@ int main(int argc, char *argv[]){
         }
         i++;
     }
-    
+
     printResult(bestPList, minDist, cList, numCURLs);
     
     freeTLists(tLists);
@@ -102,7 +97,10 @@ int *generateP(int *pList, int i, int nURLs){
     int temp = pList[x];
     pList[x] = pList[y];
     pList[y] = temp;
-
+    
+    for(i=0; i < nURLs; i++) {
+        printf("%d ", pList[i]);
+    }
     return pList;
 }
 
@@ -110,6 +108,7 @@ int *generateP(int *pList, int i, int nURLs){
 double calcSFDist(urlNode t, int c, int p, int n){
     double cardT = findTCard(t);
     double result = fabs((double)c/cardT - (double)(p+1)/(double)n);
+    //printf("%d %lf %d %d = %lf\n", c, cardT, p+1, n, result);
     return result;
 }
 
@@ -128,7 +127,6 @@ int findTCard(urlNode L){
 int inCList(char *c, char **L, int numCURLs){
     int i = 0;
     while(i < numCURLs){
-        //printf("%s\n", L[i]);
         if(strcmp(L[i], c) == 0){
             return i;
         }
@@ -219,38 +217,6 @@ void freeTLists(urlNode *tLists) {
         }
         i++;
     }
-}
-
-// Returns the jth url in a tlist
-char *getURL(urlNode list, int j) {
-    urlNode curr = list;
-    int i;
-    for (i=0; i < j; i++) {
-        curr = curr->next;
-    }
-    return curr->url;
-}
-
-// Returns the urls index in cList
-int getCIndex(char **cList, char *url, int numCURLs) {
-    int i;
-    for (i=0; i < numCURLs; i++) {
-        if (strcmp(cList[i], url) == 0)
-            return i;
-    }
-    
-    return -1; // should never get here    
-}
-
-// Returns the index's index in pList
-int getPIndex(int *pList, int index, int numCURLs) {
-    int i;
-    for (i=0; i < numCURLs; i++) {
-        if (pList[i] == index)
-            return i;
-    }
-    
-    return -1; // should never get here    
 }
 
 // Calculates n!
