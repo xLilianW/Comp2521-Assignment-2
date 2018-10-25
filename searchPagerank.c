@@ -31,7 +31,7 @@ void showURLList(URL listHead);
 int main(int argc, char *argv[]){
     URL URLList = NULL;
     
-    // Update the URLList based on number of search terms and pageweight
+    // For each URL, add to and update URLList
     int i;
     for(i = 1; i < argc; i++){
         URLList = updateURLList(URLList, argv[i]);
