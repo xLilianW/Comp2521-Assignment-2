@@ -5,24 +5,26 @@
 #include "BSTree.h"
 #include "c99.h"
 
+// Page containing a url
 typedef struct BSTListNode {
     char *URL;
     BSTPage next;
 } BSTListNode;
 
+// Node in the BST
 typedef struct BSTNode {
 	char *word;
 	BSTPage BSTPageList;
 	BSTLink left, right;
 } BSTNode;
 
-// create a new empty BSTree
+// Create a new empty BSTree
 BSTree newBSTree()
 {
 	return NULL;
 }
 
-// make a new node containing a word
+// Make a new node containing a word
 static
 BSTLink newBSTNode(char *word)
 {
@@ -34,7 +36,7 @@ BSTLink newBSTNode(char *word)
 	return new;
 }
 
-// make a new BSTPage
+// Make a new BSTPage
 static
 BSTPage newBSTPage(char *url) {
     BSTPage new = malloc(sizeof(BSTListNode));
@@ -44,7 +46,7 @@ BSTPage newBSTPage(char *url) {
     return new;
 }
 
-// free memory associated with BSTree
+// Free memory associated with BSTree
 void freeBSTree(BSTree t)
 {
 	if (t == NULL) return;
@@ -62,7 +64,7 @@ void freeBSTree(BSTree t)
 	free(t);
 }
 
-// print values in infix order, from lab 10
+// Print values in infix order, from lab 10
 void BSTreeInfix(BSTree t, FILE *out)
 {
 	if (t == NULL) return;
@@ -71,6 +73,7 @@ void BSTreeInfix(BSTree t, FILE *out)
 	BSTreeInfix(t->right, out);
 }
 
+// Print the pages associated with a BSTnode
 void showBSTNodeBSTPages(BSTLink node, FILE *out) {
     fprintf(out, "%s ", node->word);
     BSTPage curr = node->BSTPageList;
@@ -81,31 +84,7 @@ void showBSTNodeBSTPages(BSTLink node, FILE *out) {
     fprintf(out, "\n");
 }
 
-// count #nodes in BSTree
-int BSTreeNumNodes(BSTree t)
-{
-	if (t == NULL)
-		return 0;
-	else
-		return 1 + BSTreeNumNodes(t->left)
-	             + BSTreeNumNodes(t->right);
-}
-
-// count #leawordes in BSTree
-int BSTreeNumLeawordes(BSTree t)
-{
-	if (t == NULL) {
-	    return 0;
-	}
-	else if (t->left == NULL && t->right == NULL) {
-	    return 1;
-	}
-	else {
-	    return BSTreeNumLeawordes(t->left) + BSTreeNumLeawordes(t->right);
-	}
-}
-
-// insert a new word into a BSTree
+// Insert a new word into a BSTree
 BSTree BSTreeInsert(BSTree t, char *word)
 {
 	if (t == NULL)
@@ -119,30 +98,30 @@ BSTree BSTreeInsert(BSTree t, char *word)
 	return t;
 }
 
-// add a BSTPage to a words BSTPageLi
+// Add a BSTPage to a words BSTPageList
 void BSTAddBSTPage(char *url, BSTLink node) {
     BSTPage newPage = newBSTPage(url);
     BSTPage curr = node->BSTPageList;
-    // new listhead
+    // New listhead
     if (curr == NULL || strcmp(newPage->URL, curr->URL) < 0) { 
         newPage->next = curr; 
         node->BSTPageList = newPage;
         return;
     } 
     else { 
-        // find the newpage position
-        if (strcmp(curr->URL, newPage->URL) == 0) return;
+        // Find the newpage position
+        if (strcmp(curr->URL, newPage->URL) == 0) return; // no duplicates
         while (curr->next != NULL && strcmp(curr->next->URL, newPage->URL) < 0) {
             curr = curr->next;
         } 
-        if (curr->next != NULL && strcmp(curr->next->URL, newPage->URL) == 0) return;
+        if (curr->next != NULL && strcmp(curr->next->URL, newPage->URL) == 0) return; // no duplicates
 
         newPage->next = curr->next; 
         curr->next = newPage; 
     } 
 }
 
-// find the node containing a particular word
+// Find the node containing a particular word
 BSTNode *BSTreeFind(BSTree t, char *word)
 {
 	if (t == NULL)
@@ -155,18 +134,3 @@ BSTNode *BSTreeFind(BSTree t, char *word)
 		return t;
 }
 
-/*
-// delete a word from a BSTree
-BSTree BSTreeDelete(BSTree t, char *word)
-{
-	if (t == NULL)
-		return NULL;
-	else if (word < t->word)
-		t->left = BSTreeDelete(t->left, word);
-	else if (word > t->word)
-		t->right = BSTreeDelete(t->right, word);
-	else // (word == t->word)
-		t = deleteRoot(t);
-	return t;
-}
-*/

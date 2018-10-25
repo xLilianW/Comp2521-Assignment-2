@@ -9,6 +9,7 @@
 
 typedef struct listNode *URL;
 
+// node in the sorted url list
 struct listNode {
     char *URL;
     double pageWeight;
@@ -26,13 +27,13 @@ URL deleteURL(URL listHead, URL url);
 double getPageWeight(char *url);
 void showURLList(URL listHead);
 
+// Makes a list of urls sorted by number of matching search terms and pageweight
 int main(int argc, char *argv[]){
     URL URLList = NULL;
     
-    // Make list of URLs based on number of search terms in each URL
+    // Update the URLList based on number of search terms and pageweight
     int i;
     for(i = 1; i < argc; i++){
-        printf("%d %s\n", i, argv[i]);
         URLList = updateURLList(URLList, argv[i]);
     }
     
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]){
     
 }
 
+// Create a new url node
 URL newURLNode(char *url) {
     URL new = malloc(sizeof(listNode));
     assert(new != NULL);
@@ -51,34 +53,31 @@ URL newURLNode(char *url) {
     return new;
 }
 
-// Makes list of URLs if they contain search term
-// Places URLs with more search terms closer to start
-// Places URLs with higher pageWeight closer to start
+// adds to and updates the URLList based on nodes containing the given search term
 URL updateURLList(URL listHead, char *searchTerm){
-    // collect list of URLs containing the search term
+    // Collect list of URLs containing the search term
     char *URLArray[BUFSIZ];
     int nURLs = sTermURLs(searchTerm, URLArray);
 
     URL url = NULL;
     int i = 0;
     
-    // insert the first url into the list
+    // Insert the first url into the list
     if (listHead == NULL && nURLs > 0) {
         url = newURLNode(URLArray[i]);
         listHead = url;
         i++;
     }
     
-    // make changes to the URLList according to the URLs containing the search term
+    // Make changes to the URLList according to the URLs containing the search term
     while(i < nURLs){
-        if((url = URLInList(listHead, URLArray[i])) != NULL){ // updates existing node position
+        if((url = URLInList(listHead, URLArray[i])) != NULL){ // Updates existing node position
             url->countTerms++;
-            listHead = sortList(listHead, url); //position url on countTerms and pageweight
+            listHead = sortList(listHead, url); // Reposition url based on countTerms and pageweight
         }else{    // Adds new URL to list
             url = newURLNode(URLArray[i]);
-            listHead = insertURL(listHead, url); //position url on countTerms and pageweight
+            listHead = insertURL(listHead, url); // Position url based on countTerms and pageweight
         }
-        showURLList(listHead);
         i++;
     }
 
