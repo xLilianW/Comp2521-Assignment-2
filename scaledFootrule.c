@@ -17,7 +17,7 @@ typedef struct listNode {
 } listNode;
 
 urlNode newNode(char *);
-int *generateP(int *, int);
+int *generateP(int *, int, int);
 int *copyArray(int *, int *, int);
 double calcSFDist(urlNode, int, int, int);
 int findTCard(urlNode);
@@ -25,18 +25,19 @@ int positionInNodeList(char *, urlNode);
 int inList(char *, char **, int);
 int getCList(urlNode *, char **);
 urlNode *getTLists(int, char *[]);
+int fac(int);
 void printResult(int *, double, char **);
 
 
 int main(int argc, char *argv[]){
     urlNode *tLists = getTLists(argc-1, argv);
     char *cList[BUFSIZ];
-    int numURLs = getCList(tLists, cList);
-    int pList[numURLs];
-    int bestPList[numURLs];
-    int x;
+    int numCURLs = getCList(tLists, cList), numTURLs;
+    int pList[numCURLs], bestPList[numCURLs];
+    int pCombinations = fac(numCURLs);
     
-    for(x = 0; x < numURLs; x++){
+    int x;
+    for(x = 0; x < numCURLs; x++){
         pList[x] = x;
         bestPList[x] = x;
     }
@@ -44,21 +45,24 @@ int main(int argc, char *argv[]){
     double totalDist = 0.0;
     double minDist = -1.0;
     
-    int i = 0;
-    while(i < numURLs){    // Loops through each alternate set of p(TODO 1 too many loops?)
-        copyArray(pList, generateP(pList, i), numURLs);
-        int j = 0;
-        while(j < numURLs){    // Loops through each element in C urlNode
-            int k;
-            for(k = 0; k < argc-1; k++){    // Loops through each urlNode
-                totalDist += calcSFDist(tLists[k], j, pList[j], numURLs);
-                printf("calc %lf\n", totalDist);
-                if(totalDist < minDist || minDist == -1.0){
-                    minDist = totalDist;
-                    copyArray(bestPList, pList, numURLs);
-                }
+    int i = 0, j, k;
+    while(i < pCombinations){    // Loops through each alternate set of p(TODO 1 too many loops?)
+        copyArray(pList, generateP(pList, i, numCURLs), numCURLs);
+        j = 0;
+        totalDist = 0.0;
+        for(k = 0; k < argc-2; k++){    // Loops through each list file
+            numTURLs = findTCard(tLists[k]);
+            while(j < numTURLs){    // Loops through each node in the list
+                char *url = getURL(tLists[k], j);
+                // find what index the url is in p
+                totalDist += calcSFDist(numTURLs, j, pList[j], numCURLs);
+                j++;
             }
-            j++;
+        }
+        printf("calc %lf\n", totalDist);
+        if(totalDist < minDist || minDist == -1.0){
+            minDist = totalDist;
+            copyArray(bestPList, pList, numCURLs);
         }
         i++;
     }
@@ -82,16 +86,19 @@ int *copyArray(int *array1, int *array2, int len){
 }
 
 // Returns new urlNode by swapping adjacent elements in urlNode
-int *generateP(int *pList, int i){
+int *generateP(int *pList, int i, int nURLs){
     int temp = pList[i];
-    pList[i] = pList[i+1];
-    pList[i+1] = temp;
+    int x = i+1;
+    if (x >= nURLs) {
+        x = i%nURLs;
+    }
+    pList[i] = pList[x];
+    pList[x] = temp;
     return pList;
 }
 
 // Returns calulated scaled footrule aggregation
-double calcSFDist(urlNode t, int c, int p, int n){
-    int cardT = findTCard(t);
+double calcSFDist(int cardT, int c, int p, int n){
     double result = fabs((double)c/cardT - p/n);
     return result;
 }
@@ -122,9 +129,9 @@ int positionInNodeList(char *c, urlNode L){
 }
 
 // Returns position of string in array //TODO change to inList not position
-int inList(char *c, char **L, int numURLs){
+int inList(char *c, char **L, int numCURLs){
     int i = 0;
-    while(i < numURLs){
+    while(i < numCURLs){
         //printf("%s\n", L[i]);
         if(strcmp(L[i], c) == 0){
             return i;
@@ -158,8 +165,8 @@ urlNode *getTLists(int nFiles, char *files[]){
     urlNode curr = NULL;
     int i;
     
-    for(i = 0; i < nFiles; i++){    //TODO nFiles-1?
-        // open file
+    for(i = 0; i < nFiles; i++){   
+        // Open file
         FILE *file;
         if ((file = fopen(files[i+1], "r")) == NULL){
             perror("");
@@ -167,7 +174,7 @@ urlNode *getTLists(int nFiles, char *files[]){
         
         char url[URLSIZE];
         
-        // insert first URL
+        // Insert first URL
         if (fscanf(file, " %s", url) == 1) {
             tLists[i] = newNode(url);
             curr = tLists[i];
@@ -175,7 +182,7 @@ urlNode *getTLists(int nFiles, char *files[]){
         else // empty file
             continue;
         
-        // make a urlNode of URLS
+        // Make a urlNode of URLS
         while (fscanf(file, " %s", url) == 1) {
             urlNode node = newNode(url);
             curr->next = node;
@@ -186,6 +193,24 @@ urlNode *getTLists(int nFiles, char *files[]){
     tLists[nFiles] = NULL; // signify end of lists
     
     return tLists;   
+}
+
+// Returns the jth url in a tlist
+char *getURL(urlNode list, int i) {
+    urlNode curr = list;
+    int i;
+    for (i=0; i < j; i++) {
+        curr = curr->next;
+    }
+    return curr->url;
+}
+
+// Calculates n!
+int fac(int n) {
+    int c, fact = 0;
+    for (c = 1; c <= n; c++)
+        fact *= c;
+    return fact;
 }
 
 // Prints minimum distance and ranking
