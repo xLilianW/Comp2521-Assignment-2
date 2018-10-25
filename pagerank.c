@@ -2,8 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "pagerank.h"
+#include "graph.h"
 #include "readData.h"
+
+double calcPageRank(Graph, GraphPage, double);
+void orderWGraphPages(Graph);
 
 // Creates file containing list of urls ordered by page ranks
 int main(int argc, char *argv[]){
@@ -51,7 +54,6 @@ double calcPageRank(Graph g, GraphPage p, double d){
     double pageRank = (1-d)/(numNodes(g)) + (d*sumOutGoing);
     return pageRank;
 }
-
 
 // Orders urls by page rank
 void orderWGraphPages(Graph g){
