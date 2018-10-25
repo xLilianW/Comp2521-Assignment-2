@@ -59,12 +59,11 @@ int main(int argc, char *argv[]){
                 char *url = getURL(tLists[k], j);
                 cIndex = getCIndex(cList, url, numCURLs);
                 pIndex = getPIndex(pList, cIndex, numCURLs);
-                printf("%d %s %d %d\n", j, url, cIndex, pIndex);
-                totalDist += calcSFDist(numTURLs, j, pIndex, numCURLs);
+                totalDist += calcSFDist(numTURLs, j+1, pIndex, numCURLs);
                 j++;
             }
         }
-        //printf("calc %lf\n", totalDist);
+        printf("calc %lf\n", totalDist);
         if(totalDist < minDist || minDist == -1.0){
             minDist = totalDist;
             copyArray(bestPList, pList, numCURLs);
@@ -106,7 +105,7 @@ int *generateP(int *pList, int i, int nURLs){
 
 // Returns calulated scaled footrule aggregation
 double calcSFDist(int cardT, int c, int p, int n){
-    double result = fabs((double)c/cardT - (p+1)/n);
+    double result = fabs((double)c/(double)cardT - (double)(p+1)/(double)n);
     return result;
 }
 
