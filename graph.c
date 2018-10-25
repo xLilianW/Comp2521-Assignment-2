@@ -142,14 +142,6 @@ char *getURL(GraphPage p){
     return p->URL;
 }
 
-// Returns the linked list of connections for a given url
-Outgoing getConnections(Graph g, int i) {
-    if (i < g->nV) 
-        return g->connections[i];
-    else
-        return NULL;
-}
-
 // For testing, prints each url with their outgoing links
 void showGraph(Graph g) {
     int i;
@@ -165,12 +157,27 @@ void showGraph(Graph g) {
     }
 }
 
+// Calculates page rank
+double calcPageRank(Graph g, GraphPage p, double d){
+    double sumOutGoing = 0.0;
+    
+    // Search through all pages with outgoing links to p
+    int i;
+    for(i = 0; i < numNodes(g); i++){
+        if(isInLink(g, p, g->URLs[i])){
+            sumOutGoing += getPageWeight(g->URLs[i])*inLinkPopularity(g, g->URLs[i], p)*outLinkPopularity(g, g->URLs[i], p);
+        }
+    }
+    double pageRank = (1-d)/(numNodes(g)) + (d*sumOutGoing);
+    return pageRank;
+}
+
 // Returns number of inlinks a url has
 int countInLinks(Graph g, GraphPage url){
     int numInLinks = 0;
     int i = 0;
     for (i = 0; i < g->nV; i++){
-        if(isInLink(g, url, getPage(g, i))){
+        if(isInLink(g, url, g->URLs[i])){
             numInLinks++;
         }
     }
@@ -207,28 +214,22 @@ double outLinkPopularity(Graph g, GraphPage v, GraphPage u){
     int vIndex = findURLIndex(g, v);
     Outgoing curr = g->connections[vIndex];
     while(curr != NULL){    // Search through all reference pages for v
-        int numOutLinks = countOutLinks(g, findURLIndex(g,curr));
-        if(numOutLinks > 0){
-            sumRefLinks += numOutLinks;
-        }else{
-            sumRefLinks += 0.5;
-        }
+        sumRefLinks += countOutLinks(g, findURLIndex(g,curr));
         curr = curr->next;
     }
-    double outLinksU = (double)countOutLinks(g, findURLIndex(g, u));
-    if(outLinksU > 0){
-        return outLinksU/sumRefLinks;
-    }
-    return 0.5/sumRefLinks;
+    return countOutLinks(g, findURLIndex(g, u))/sumRefLinks;
 }
 
 // Counts number of outgoing links a given url has
-int countOutLinks(Graph g, int index){
-    int numOutLinks = 0;
+double countOutLinks(Graph g, int index){
+    double numOutLinks = 0;
     Outgoing curr = g->connections[index];
     while(curr != NULL){
         numOutLinks++;
         curr = curr->next;
     }
-    return numOutLinks;
+    if(numOutLinks > 0){
+        return numOutLinks;
+    }
+    return 0.5;
 } 
